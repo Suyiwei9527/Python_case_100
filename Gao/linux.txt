@@ -1,0 +1,367 @@
+ps -lA | grep 'Z'
+ps -p pid
+
+163mail：KQ47FstYykRAXRWi
+
+saibai cikeiayi masika
+Senpai tsukiai  masuka
+
+windows mysql root/admin
+75 mysql root/Arraynetworks77.7
+76 postgres/admin
+
+lspci | grep -i eth‌
+
+nmap -sn -v 172.17.1.0/24
+
+/usr/local/bin/nerdctl exec -it asf_container /bin/bash
+
+检测是否有流量，开启之后，如果基本健康检查down的原因是 超时，且有流量，就认为健康检查up，up的原因为SLB real service traffic
+你得在它完全down之前有流量
+可以吧健康检查超时时间改为1， rs的网卡延迟大于1,1点几
+
+大页使用情况
+/ca/bin/anetstat -z
+Page: 746653 / 14933049 alloc/max
+/ca/bin/u_sysctl vm.mem_overload
+
+cat /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+cat /sys/kernel/mm/hugepages/hugepages-1048576kB/nr_hugepages
+确认系统支持HugePage
+cat /proc/cmdline
+/proc/meminfo
+ll /mnt/huge -lh
+
+插数据dd if=/dev/zero  of=/opt/report/report/test  bs=1024M   count=20
+fallocate -l 8G /var/www/html/gaov
+为文件预分配物理空间，du命令也可以看到文件的大小，如果空间不足会提示，且创建文件失败，速度很快*
+
+华为聚合组
+interface eth-trunk 91
+trunkport 10GE 1/0/14
+
+lsof：list open files 列出系统中打开的文件
+lsof -i :67 某个端口的网络链接状态
+lsof -p 某个进程打开的所有文件
+
+yum install lsof
+lsof | grep delete
+
+ls -l 文件实际大小
+du -sh 磁盘空间
+
+systemctl restart radiusd
+less /etc/raddb/clients.conf
+less /etc/raddb/users
+steve_admin@192.168.101.74 testing
+steve@192.168.101.74 testing
+
+killall wrk
+
+ifconfig ens256 mtu 2860
+
+ntp：net start w32time
+
+Firefox：about:config 启用:network.http.http3.enabled Chrome
+
+Y:\公共空间\Library\test\华耀产品\APV\project\移动IT云
+certutil -hashfile ArrayOS-Rel.APV.10.4.0.179.patch.p17 SHA256
+certutil -hashfile asf.signed.tar.gz md5
+
+批注 Ctrl+Alt+M
+
+netstat -an | grep CLOSE_WAIT | wc -l
+
+backend进程内存使用
+ps -e -o 'pid,comm,args,pcpu,rsz,vsz,stime,user,uid' | grep named | sort -k5nr
+
+nohup /root/hami1.sh > h2load-H.out 2>&1 &:
+nohup /root/DNS/queryperf.sh > /dev/null 2>&1 &:
+nohup tcpdump -i ens224 "host 172.17.1.151" > a2.txt 2>&1 &:
+2>&1 表示将标准错误输出重定向到标准输出
+
+        查看 编辑
+crontab -l   -e
+
+编辑 /etc/security/limits.conf 文件，可以使用任何文本编辑器打开。
+在文件的末尾添加以下行：
+*      soft    nofile      1009999
+*      hard    nofile      1009999
+
+ulimit -n 1009999
+
+userlist_enable=NO#需要匿名用户登陆时
+匿名根目录/var/ftp
+ftp gaov@192.168.101.75:111111 /home/gaov
+tftp 192.168.101.75 put b.txt
+
+scp -c aes128-ctr -r  asf.signed.tar.gz root@192.168.101.74:/root/asf.signed.tar.gz
+scp -c aes128-ctr -r root@[192::100:98]:/vmfs/volumes/61237a9f-fcf512b0-f480-e8343e005ed0/Gao_Windows /vmfs/volumes/6362a35e-773a3630-4be6-001b21698184/Gao_Windows_10.148_107
+/vmfs/volumes/datastore1
+
+编辑>首选项>RSA密钥
+openssl pkcs12 -export -out gaov.pfx -inkey apache.gao.com.key -in apache.gao.com.crt
+
+/etc/httpd/ca
+openssl req -newkey rsa:4096 -nodes -sha256 -keyout ca.key -x509 -days 1000 -out ca.crt
+openssl req -newkey rsa:4096 -nodes -sha256 -keyout apache.gaov_1106.com.key -out apache.gaov_1106.com.csr
+openssl x509 -req -days 365 -in apache.gaov_1106.com.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out apache.gaov_1106.com.crt
+
+/etc/hosts
+\WINDOWS\system32\drivers\etc\hosts
+
+定时任务
+taskschd.msc
+D:\Python_case_100\Gao\case215_update_file.py
+D:\Python\
+
+vi /etc/named.conf
+vi /etc/named.rfc1912.zones
+vi /var/named/named.apache.gao
+less /var/named/named.ca
+systemctl restart named
+
+du -h -x --max-depth=1
+du -sh * | sort -nr
+
+echo 1 > /proc/sys/net/ipv6/conf/all/forwarding
+echo "1" >/proc/sys/net/ipv4/ip_forward
+
+pktcap-uw --switchport 67108876 --dir 0 -proto 0x1 --dstip 192.168.130.40 -o test.pcap
+net-stats -l
+
+top -sH -p
+pstack
+
+/etc/init.d/apache2 restart
+
+--ssl-key-log-file=E:\sslkey.log
+openssl ciphers -V
+openssl version -a
+
+nginx：/etc/nginx/sites-available
+vi /etc/httpd/conf/httpd.conf
+vi /etc/resolv.confs
+
+修改接口/etc/sysconfig/network-scripts
+ONBOOT=yes
+IPADDR=10.1.1.151
+PREFIX=24
+GATEWAY=10.1.1.121
+IPV6INIT=yes
+IPV6_AUTOCONF=no
+IPV6ADDR=2022::2552/64
+IPV6_DEFAULTGW=2021::1/64
+
+w67：netplan apply
+
+/etc/netplan
+/etc/NetworkManager/system-connections
+systemctl restart NetworkManager
+
+route add default gw 192.168.100.1
+ip route del default
+ip route add default via 192.168.100.1 dev ens160
+ip -6 route del default via 192::100:1 dev ens192
+
+静态路由加到
+any net 192.168.80.0 netmask 255.255.255.0 gw 192.168.100.1
+/etc/sysconfig/static-routes
+
+route del -host 192.168.100.1 dev ens256
+ip route 106.130.47.0/24 via 106.128.252.177
+route -A inet6 add 2021::150/128 gw 2022::6316
+
+ip -6 route show
+ip -6 route show default
+ip -6 route del
+
+modprobe -a 8021q
+lsmod | grep 8021q
+sudo ip link add link ens192 name vlan.147 type vlan id 147
+ip addr add 106.128.252.13/24 dev vlan.147
+ip link set dev vlan.147 up
+ip addr add 2025:8050:58c0:bbf8::8:148/112 dev vlan.8
+
+ifconfig ens256:1 2021::148 netmask 64 up
+ifconfig eth0 inet6 add 2404:BC0:4:9045::137/64
+
+centos
+ip addr del 3.3.33.1/24 dev ens34（增加多个ip地址，通过ip add展示）
+ip addr add 2022::153/64 dev ens192
+ifconfig ens192 12.12.12.14 netmask 255.255.255.0 up（给相应接口配置地址）
+
+延迟响应
+sudo tc qdisc del dev ens192 root netem delay 500ms
+
+清除arp    arp -n|awk '/^[1-9]/{print "arp -d " $1}'|sh -x
+arp -i eth160 -s 192.168.100.105 00:0c:29:27:94:14  
+删除 arp -d 
+
+systemctl list-unit-files --type=service  #列出所有服务
+
+ps -ef | grep ./wrk | grep -v grep
+
+lscpu
+# CPU 个数
+cat /proc/cpuinfo | grep "physical id" | sort | uniq | wc -l
+# 核数
+cat /proc/cpuinfo | grep "core id" | sort | uniq | wc -l
+# CPU内核总数
+cat /proc/cpuinfo | grep "processor" | sort | uniq | wc -l
+
+版本信息 cat /proc/version 操作系统 cat /etc/redhat-release  Ubuntu或Debian：cat lsb_release -a
+内核信息 uname -a
+统发行信息 cat /etc/issue   ：CentOS release 6.9 
+cpu相关信息，包括型号、主频、内核信息等 cat /etc/cpuinfo
+uname命令用于打印当前系统相关信息（内核版本号、硬件架构、主机名称和操作系统类型等）。
+查看系统版本信息的命令 lsb_release -a    yum install redhat-lsb -y
+CPU使用率：mpstat
+
+yum install -y zip unzip
+
+yum -y install wget
+yum -y install setup
+yum -y install perl
+
+rz、sz yum install -y lrzsz
+sudo apt-get install lrzsz
+
+yum install -y tcpdump-4.9.2-4.el7_7.1.x86_64.rpm
+yum install -y libpcap-1.5.3-12.el7.x86_64.rpm
+
+yum -y install telnet-server
+yum -y install telnet
+yum -y install xinetd
+
+systemctl restart snmptrapd
+log：/var/log/messages
+systemctl restart snmpd
+systemctl restart rsyslog
+
+cp -r /vmfs/volumes/datastore1/HG_UOS_K/* /vmfs/volumes/datastore1/Gao_HG_K/ 复制文件夹下的所有内容
+cp -r /home/packageA/. /home/cp/packageB/
+cp -r /home/packageA /home/packageB 复制文件夹
+
+默认root无法远程访问，因此需要修改以下配置文件/etc/securetty
+而且centos7下面安装telnet没有生成 /etc/xinetd.d/telnet文件
+查看日志
+tail -f /var/log/secure
+
+Centos7：
+1.修改/etc/httpd/conf/httpd.conf
+2.开启 LoadModule headers_module modules/mod_headers.so并增加自定义Header头
+ubuntu：
+1./etc/apache2/mods-available下查看header.load文件配置正确
+2./etc/apache2/mods-enabled下创建header.load文件的软链接
+ln -s /etc/apache2/mods-available/headers.load headers.load
+3.修改apache配置文件/etc/apache2/apache2.conf
+
+esxcli system process list | grep tar
+
+esxcli network firewall get
+esxcli network firewall set --enabled false
+esxcli network firewall set --enabled true
+
+esxcli network nic list
+esxcli network ip neighbor list
+vim-cmd vmsvc/getallvms | awk '{print $1}' | while read vmid; do echo "VM ID: $vmid"; vim-cmd vmsvc/device.getdevices $vmid | grep macAddress; echo ""; done
+vim-cmd vmsvc/getallvms | awk '{print $1}' | while read vmid; do echo "VM ID: $vmid"; vim-cmd vmsvc/get.summary $vmid | grep ipAddress; echo ""; done
+
+查看进程
+ps aux | grep xxx
+pstree
+
+产看进程连接数：lsof -p process_id |grep TCP
+风扇转速：/ca/bin/u_sysctl net.inet.clicktcp.u_cpu1fan_speed
+
+setsebool -P haproxy_connect_any=1
+
+yum -y install epel-release
+yum -y install tcpreplay
+
+firewall-cmd
+firewall-cmd --state
+firewall-cmd --list-all         #查看防火墙所有信息
+firewall-cmd --list-ports
+firewall-cmd --query-port=80/tcp 
+firewall-cmd --permanent --zone=public --add-port=3306/tcp   #永久打开一个新端口
+firewall-cmd --permanent --zone=public --remove-port=60000-60200/tcp
+firewall-cmd --reload          #重新载入配置，比如添加规则之后，需要执行此命令
+
+firewall-cmd --get-zones                       #列出支持的zone
+firewall-cmd --get-services                    #列出支持的服务，在列表中的服务是放行的
+firewall-cmd --query-service ftp               #查看ftp服务是否支持，返回yes或者no
+firewall-cmd --add-service=ftp --permanent     #永久开放ftp服务
+firewall-cmd --remove-service=ftp --permanent  #永久移除ftp服务
+
+systemctl stop firewalld 		#停止firewall
+systemctl start firewalld 		#启动firewall
+systemctl restart firewalld 	#重启firewall
+systemctl enable firewalld 		#开启firewall开机启动
+systemctl disable firewalld 	#禁止firewall开机启动
+
+- PID: Process ID 进程ID
+- USER: User running the process 运行该进程的用户
+- PR: Process priority 进程优先级
+- NI: Nice value of the process 进程的优先级数值
+- VIRT: Virtual memory used by the process 进程使用的虚拟内存
+- RES: Resident memory used by the process 进程使用的实际内存（驻留内存）
+- SHR: Shared memory used by the process 进程使用的共享内存
+- S: Process status (S=sleeping, R=running, Z=zombie, etc.) 进程状态（S=睡眠、R=运行、Z=僵尸等）
+- %CPU: Percentage of CPU usage by the process 进程使用的CPU占比
+- %MEM: Percentage of memory usage by the process 进程使用的内存占比
+- TIME+: Total CPU time used by the process 进程使用的总CPU时间
+- COMMAND: Name of the running command or program 正在运行的命令或程序的名称
+
+无论大端序还是小端序，单个字节内部的bit顺序是一致的
+一个32位的整型数据0x12345678，高位字节为0x12
+大端序（网络字节序）：高位字节--->内存的低地址端，0x12345678高位字节0x12存放在内存低地址
+小端序：0x78562312 高位字节0x12存放在内存高地址，X86架构的处理器都是小端序
+
+lsblk
+fdisk /dev/sdb
+退出
+pvcreate /dev/sdb1
+pvdisplay
+vgextend sda5 /dev/sdb1
+
+gparted
+
+lvresize -l +100%FREE /dev/sda5
+xfs_growfs /dev/sda5
+
+递归查询是本地DNS服务器代表客户端完成整个查询过程
+迭代查询是本地DNS服务器将查询过程的一部分返回给客户端，客户端需要自己继续向下一级DNS服务器发出查询请求
+
+orchestrator listener name "gao_listener1" "inb_proxy"
+orchestrator listener interface uplink "gao_listener1" "port3"
+orchestrator listener interface downlink "gao_listener1" "port2"
+orchestrator service l2 "fw" "bypass" "pi"
+orchestrator service l3 "ips" "bypass" "pi"
+orchestrator service l3 "waf" "bypass" "pi"
+orchestrator service tap "ids" "port8" 00:0c:29:bf:32:73
+orchestrator service enable "fw"
+orchestrator service enable "ips"
+orchestrator service enable "waf"
+orchestrator service enable "ids"
+orchestrator chain name "chain1"
+orchestrator chain name "chain2"
+orchestrator chain name "chain3"
+orchestrator chain name "chainall"
+orchestrator chain member "chain1" "ids" 1
+orchestrator policy name "PG_listener1_8081" 1002 "group" "orch_vs_PL_listener1_KdnE_default_g" "chain" "chain1"
+orchestrator policy name "PC_listener1_F5YH" 1003 "chain" "chain1" "virtual" "vs_PC_listener1_F5YH"
+orchestrator policy name "PC_gao_listener1_K142" 100 "listener" "gao_listener1" "chain" "chain1"
+orchestrator policy name "PC_gao_listener1_51KZ" 1002 "listener" "gao_listener1" "chain" "chain2"
+orchestrator policy name "PC_gao_listener1_42w7" 1006 "chain" "chain2" "chain" "chainall"
+orchestrator policy name "PC_gao_listener1_m355" 1006 "chain" "chainall" "chain" "chain3"
+orchestrator rule network "rule_443" "0.0.0.0" "0" "0.0.0.0" "443" "tcp"
+
+export PATH=$PATH:/usr/local/go1.9/bin
+
+# 配置 GOPROXY 环境变量
+export GOPROXY=https://goproxy.io,direct
+
+array：gaozc@Arraynetworks952.7
+

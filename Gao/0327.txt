@@ -1,0 +1,140 @@
+ICMP：差错通知+信息查询
+type：3	终点不可达   
+code：0	网络不可达
+code：1 	主机不可达
+code：2 	协议不可达
+code：3 	端口不可达（UDP端口扫描）
+code：4	需要分片，但DF（Don't Fragment）置位（MTU探索）
+
+type：5	改变路由
+code：0	特定网络路由改变
+code：1 	特定主机路由改变
+
+type：4	code：0	源点抑制（数据包来不及处理，向送信方发送该报文，减慢发送速度）
+
+type：11	超时
+code：0	由于TTL为0的超时（traceroute原理）
+code：1 	规定时间没有收到所有的分片
+
+16-bit TCP checksum：checksum TCP segment (TCP HEADER + TCP DATA)，以16位字进行计算，发送端计算存储，接收端验证。
+紧急指针：URG置1时有效，是一个正的偏移量，urgent+sequence number表示紧急数据最后一个字节序号
+
+three-way handshake								
+C：发完SYN后       CLOSED----->SYN_SENT         CLOSED----->LISTEN（一开始便处于LISTEN） 
+                                                S：收到SYN后完SYN+ACK后    LISTEN----->SYN-RCVD
+C：回复ACK后       SYN_SENT ----->ESTABLISHED      						
+												S：收到ACK后           	   SYN-RCVD----->ESTABLISHED
+												
+connection-establishment timer（建立连接定时器）：发送SYN启动一个定时器（3s），SYN丢了会重复发，下一次timer为6s
+retransmission timer（重传定时器）：发送数据时，该timer超时仍未收到ACK则重新发送队列中需重传的报文段
+delayed ACK timer（延迟应答定时器）：捎带ACK，等待一段时间后回复ACK，可提高网络传输效率
+persist timer（坚持定时器）：Window size由0----->非0会发送一个ACK指明需要的报文段序号+Window size；该ACK丢失将导致双方均等待而使连接终止；因此需要persist timer周期性向接收方发送（window probe）查询窗口变化
+keepalive timer（保活定时器）：TCP建立连接时指定了SO_KEEPALIVE生效，C、S长时间无数据交互，周期性（default 2hours）探测对方是否还活着
+
+four-way wave
+C：发完FIN后          ESTABLISHED---->FIN_WAIT-1                        S：发完ACK后       ESTABLISHED----->CLOSE-WAIT
+C：收到ACK后          FIN_WAIT-1----->FIN_WAIT-2（等待S关闭）           S：发完FIN后       CLOSE-WAIT----->LAST-ACK
+C：收到S的FIN后       FIN_WAIT-2----->TIME-WAIT 并发送LAST-ACK          S：收到ACK后       LAST-ACK----->CLOSED
+C：2MSL后             TIME-WAIT----->CLOSED
+
+MSL（Maximum Segment Lifetime，报文段最大生存时间）‌
+RFC793规定MSL为2分钟，应用中常采用30秒、1分钟或2分钟
+
+TIME-WAIT：
+1.确保LAST-ACK丢失，被动一端未收到ACK，能继续回应被动关闭发来的FIN
+2.保证延迟的TCP报文有足够时间被识别、丢弃（该状态下不会建立同一条连接）----->以免影响立刻建立的新连接
+
+FIN_WAIT_2 timer：FIN_WAIT_2下被动关闭的一端网络断掉或宕机无法发送FIN，等待FIN_WAIT_2 timer后直接释放连接
+
+分布式：协议计算的控制平面和报文转发的数据平面
+SDN（Software Defined Network）软件自定义网络，OPenFlow使网络向软件一样灵活编程
+
+防火墙本质就是 filter-policy
+firewall：查看会话表
+首包才能创建会话
+1.匹配IP route 2.匹配Security Policy
+实现包过滤的核心技术是访问控制列表
+域间安全策略：域间流量的转发（转发策略）适用于接口加入不同安全区域的场景
+
+(GRE)General Routing Encapsulation，三层VPN封装技术，对网络层协议进行封装，再另一种网络中传输。
+GRE上层协议是IP，协议号为47
+
+FTP主动连接：PORT  S通过port:20主动与客户端建立数据连接
+FTP被动连接：PASV  S被动等待客户端连接，然后向客户端发送数据
+PORT+SNAT   S在公网，C需要SNAT访问
+PASV+DNAT  S在内网，客户端需要DNAT访问
+
+安全区域：区分不同的网络，一个或多个接口的集合
+安全域间：两个安全区域之间唯一的“道路”
+低级别区域 ---->高级别区域  Inbound
+高级别区域 ---->低级别区域  Outbound
+判断一条流量的方向，以发起该条流量的第一个包为准
+状态检测+会话机制
+内容安全一体化检测
+多通道协议:H.323 SIP FTP 使用固定端口初始化控制连接，使用动态的选择端口进行数据连接
+ASPF:（Appplication Specific Packet Filter）创建的会话表项叫做Server-map
+
+配置NAT No-PAT 后，设备会为有实际流量的数据流建立Server-map,存放私网IP地址与公网IP地址的映射关系
+NAT Server 外部网络用户通过公网地址访问私网内部服务器
+NAT Server no-reverse 可配置多个global地址同一个inside地址建立映射关系
+no-reverse：Server-map表只有正方向，内部服务无法主动访问外部网络
+一个内网服务器发布多个公网IP：
+1.多个公网IP在不同安全区域：针对不同安全区域发布不同的公网IP的NAT Server
+2.多个公网IP在同一个安全区域：配置no-reverse
+
+DDOS（Distributed Denial of Service）：SYN Flood、UDP Flood、ICMP Flood、HTTP Flood、DNS Flood（网络带宽拥塞，威胁Server正常提供业务）
+DOS（Denial of Service）：单包攻击，扫描类攻击、畸形报文类攻击、特殊报文类攻击
+
+本地创建ssh key
+ssh-keygen -t rsa -C "your_email@youremail.com"
+git hub增加ssh key
+
+设置username email
+设置username emailgit config --global user.name "your name"
+git config --global user.email "your_email@youremail.com"
+
+git clone从现有Git仓库拷贝项目
+git clone git@github.com:Suyiwei9527/Python_case_100.git
+
+本地仓库由working dir、Index、HEAD组成
+
+提出更改（添加到暂存区）
+git add <filename>
+git add *
+实际提交改动（提交到HEAD）
+git commit -m 'add syn-syn time diff script'
+提交到远端仓库
+git push origin main
+
+未克隆现有仓库
+git remote add origin <server>
+origin：远程仓库的名称
+
+创建feature_x分支
+git checkout -b feature_x
+切回主分支
+git checkout master
+删除feature_x分支
+git checkout -d feature_x
+
+更新本地仓库至最新（工作目录中获取并合并远端改动）
+git pull
+变基
+git pull --rebase
+
+HEAD中的最新内容替换掉你的工作目录filename，已添加到暂存区的改动以及新文件都不会受到影响。
+git checkout -- <filename>
+ 
+丢弃本地所有改动与提交
+git fetch origin（从服务器上获取最新版本）
+git reset --hard origin/main
+
+JMeter是Apache基于Java开源的压力测试工具、接口测试工具
+基于协议、通过进程下启动线程方式模拟并发用户
+依靠线程数提高并发量，单机模拟数以千计并发用户，对CPU、内存消耗大
+
+wrk轻量化的HTTP性能测试工具，采用线程+网络异步IO模型--->很少的线程模拟大量网络连接
+网络异步IO：非阻塞的IO处理，用户进程发起IO请求后立即返回，且内核完成全部操作，最后通过回调或信号通知用户进程处理结果
+
+locust是简单易用的分布式负载测试工具，主要用来对网站进行负载测试，借助协程实现对用户的模拟。
+

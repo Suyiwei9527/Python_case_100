@@ -1,0 +1,101 @@
+PVWJZBHLVZCVCYJM
+负数 在计算机中以补码形式存储
+
+return
+datetime.timedelta(days=1) 返回操作后的日期
+使用join链接list成为字符串
+“”.join(k for k in l)
+spilt 将一个字符串分割成多个元素的list
+reduce(function, iterable[, initializer]) 将iterable可迭代对象进行function操作
+(?:x) 匹配x后当做整体处理，非捕获括号
+sorted(iterable, key=None, reverse=False) 可迭代对象iterable，以key进行比较排序，最终返回一个新list
+定义可变参数，在参数前面加了一个*号	def calc(*numbers):
+在list或tuple前面加一个*号，把list或tuple的元素变成可变参数传进去
+关键字参数允许传入0个或任意个含参数名的参数，在函数内部自动组装为一个dict	def person(name, age, **kw):
+dict前面加**号，把dict的所有key-value用关键字参数传入到函数的**kw参数，kw将获得一个dict
+def person(name, age, *, city, job):	*后面的参数被视为命名关键字参数
+socket.inet_ntoa(struct.pack(">I",random.randint(2164260864,3741648133)))：随机int打包成大端存储无符号四字节整数字节序----->IP地址的标准点号分隔字符串
+
+time.time() 返回当前时间的时间戳（1970纪元后经过的浮点秒数
+time.ctime 时间戳（按秒计算的浮点数）转化为time.asctime()的形式
+time.asctime 接受时间元组并返回一个可读的形式为"Tue Dec 11 18:07:14 2008"（2008年12月11日 周二18时07分14秒）的24个字符的字符串
+time.localtime 函数类似gmtime()，作用是格式化时间戳为本地的时间
+time.gmtime 函数将一个时间戳转换为UTC时区（0时区）的struct_time
+
+time.strptime() 根据指定格式，把一个时间字符串解析为时间元组,获取结构化时间
+time.mktime() 根据结构时间，获取时间戳
+time.strftime() 根据结构时间，获取指定格式时间
+
+datetime 重新封装了time模块，提供的类有 date time datetime timedelta tzinfo
+date:
+date.max、date.min：date对象所能表示的最大、最小日期；
+date.resolution：date对象表示日期的最小单位。这里是天
+date.today() 返回一个表示当前本地日期的date对象
+date.formtimestamp(timestamp) 根据给定的时间戮，返回一个date对象
+datetime:
+datetime.today()：返回一个表示当前本地时间的datetime对象
+datetime.now([tz])：返回一个表示当前本地时间的datetime对象，如果提供了参数tz，则获取tz参数所指时区的本地时间
+datetime.utcnow()：返回一个当前utc时间的datetime对象；#格林威治时间
+datetime.fromtimestamp(timestamp[, tz])：根据时间戮创建一个datetime对象，参数tz指定时区信息
+datetime.utcfromtimestamp(timestamp)：根据时间戮创建一个datetime对象
+datetime.combine(date, time)：根据date和time，创建一个datetime对象
+datetime.strptime(date_string, format)：将格式字符串转换为datetime对象
+timedelta 在日期上做天days，小时hour，分钟，秒，毫秒，微妙的时间计算
+
+os.listdir(path) 返回指定的文件夹包含的文件或文件夹的名字的列表
+
+主机序字节指小端存储，低位字节在内存的低地址端
+网络序字节指大端存储，低位字节在内存的高地址端
+
+Socket
+socket.ntohl(x)：32位正整数网络序----->主机字节序
+socket.ntohs(x)：16位正整数网络序----->主机字节序
+socket.htonl(x)：32位正整数主机字节序----->网络序
+socket.htons(x)：16位位正整数主机字节序----->网络序
+socket.inet_aton(ip_string)：IPV4地址字符串（192.168.10.8）----->32位打包的二进制格式（长度为4个字节的二进制字符串）
+socket.inet_ntoa(packed_ip)：32位打包的IPV4地址----->IP地址的标准点号分隔字符串
+socket.inet_pton(address_family,ip_string)：IP地址字符串----->打包二进制格式。AF_INET和AF_INET6分别表示IPV4和IPV6
+socket.inet_ntop(address_family,packed_ip)：打包IP地址----->标准字符串表达式
+
+struct解决bytes和其他二进制数据类型转换
+struct.pack：任意数据类型----->bytes
+struct.pack('>I', 10240099)    >表示字节顺序是big-endian    I表示4字节无符号整数
+struct.unpack：bytes----->相应的数据类型
+
+字符串最常用数据类型
+字符串格式化：将值插入到一个有字符串格式符%s的字符串中
+%s %d %c %p %u
+str.format() 增强了字符串格式化的功能
+f-string字面量格式化字符串
+name = 'Runoob'
+f'Hello {name}'  # 替换变量
+'Hello Runoob'
+
+序列是最基本的数据结构，共6个序列的内置类型
+list:数据类型
+append()更新、pop()删除并返回、del语句删除、列表可嵌套，operator模块的eq方法用于比较
+len(list)、min(list)、max（list）、list(seq)函数
+
+元组与list类似，但不能修改，指元组指向内存中的内容不可变
+tuple(iterable)函数：可迭代系列转换为元组
+
+_name_是一个内置变量，表示当前模块的名称
+主程序时为"__main__"，被当模块导入时为模块的文件名
+
+dict：可变容器模型，且可存储任意类型对象
+1.不允许同一个键出现两次
+2.键必须不可变
+dict.copy()
+直接赋值是引用对象，随着原始对象变化；浅拷贝（一级目录深拷贝，二级目录引用)；深拷贝需引入copy模块，完全拷贝父、子对象
+
+set：无序的不重复元素序列
+创建一个空集合必须用 set() 而不是 { }，因为 { } 是用来创建一个空字典
+集合推导式(Set comprehension):
+a = {x for x in 'abracadabra' if x not in 'abc'}
+{'r', 'd'}
+
+关键字end可以用于将结果输出到同一行，或者在输出的末尾添加不同的字符
+
+内部排序：只使用内存
+交换排序：冒泡排序、快速排序
+插入排序：直接插入排序、希尔排序
