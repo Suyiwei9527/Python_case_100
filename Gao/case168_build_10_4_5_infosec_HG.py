@@ -26,10 +26,7 @@ save_folder = "D:\Build"
 pattern = r'(Beta|Rel){version}(\d+) \(build on  {date} '.format(date=now,version=build_version)
 #print(pattern)
 match = re.search(pattern, content)
-#f = open("Gao/url_infosec_apv.txt" , "w+",encoding="utf-8")
-#f.write(content)
-#f.close()
-#print(match)
+
 # 如果匹配成功
 if match:
     # 获取build数字和时间信息
@@ -44,7 +41,6 @@ if match:
 
     # 构造下载链接
     download_url = "http://10.3.0.120/newapv/build/" + build_prefix + "{}".format(build_num) + build_sufix
-    #download_url = "http://192.168.100.101/Build/ArrayOS-Beta_APV_10_4_3_{}.array".format(build_num)
     # 下载文件
     file_path = os.path.join(save_folder, build_prefix + "{}".format(build_num) + build_sufix)
     if not os.path.exists(file_path):
