@@ -1,5 +1,11 @@
 case0:#BMI
 
+linux:ps -lA | grep 'Z'
+
+temp:import socket
+
+tips:PVWJZBHLVZCVCYJM
+
 case1:#1 2 3 4四个数字，可组成多少个互不相同无重复的三位数，分别是哪些
 
 case2:#利润(I)低于或等于10万元时，奖金可提10%；
@@ -191,6 +197,8 @@ case98:#键盘输入一个字符串，小写字母全部转换成大写字母，
 
 case99:#文件A和B,各存放一行字母,两个文件信息按字母顺序排列输出到文件C中
 
+100case_title:case0:#BMI
+
 case100:#列表转换为字典
 
 case101:#两数相加
@@ -264,8 +272,147 @@ case133:#二分查找,适用于有规律的list，每次从中间开始查找逐
 
 case134:#插入排序通过构建有序序列，对于未排序数据，在已排序序列中从后向前扫描，找到相应位置并插入
 
+case134_2:#插入排序通过构建有序序列，对于未排序数据，在已排序序列中从后向前扫描，找到相应位置并插入
+
 case135:#读目录下所有文件的第一行，写入另一文件
 
 case136:#快速排序使用分治法（Divide and conquer）把一个list分为较小和较大的2个子序列，然后递归地排序两个子序列
+
 case137:#选择排序（Selection sort）先在未排序列中找到最小（大）元素放到起始，再继续寻找最小（大）元素，放到已排序序列的末尾。
+
+case138:#冒泡排序（Bubble Sort）重复地走访数列，一次比较两个元素改变顺序，直到没有再需要交换停止走访，算法的名字由来是因为越小的元素会经由交换慢慢"浮"到数列的顶端
+
+case139:#归并排序（Merge sort，或mergesort）是在归并操作上的一种有效的排序算法,是分治法（Divide and Conquer）的一个非常典型的应用。
+
+case140:#计数排序的核心在于将输入的数据值转化为键存储在额外开辟的数组空间中。
+
+case141:#希尔排序，也称递减增量排序算法，是插入排序的一种更高效的改进版本。是非稳定排序算法。先将整个序列分割成为若干子序列分别进行直接插入排序，待整个序列"基本有序"时，再对全体记录进行依次直接插入排序。
+
+case142:#对一个有向无环图(Directed Acyclic Graph简称DAG)G进行拓扑排序，是将G中所有顶点排成一个线性序列，使得图中任意一对顶点u和v，若边(u,v)∈E(G)，则u在线性序列中出现在v之前。通常，这样的线性序列称为满足拓扑次序(Topological Order)的序列，简称拓扑序列。简单的说，由某个集合上的一个偏序得到该集合上的一个全序，这个操作称之为拓扑排序。
+
+case143:#堆排序（Heapsort）利用堆这种数据结构所设计的一种排序算法。1.建立大顶堆2.堆顶与数组末尾元素交换3.剩余序列重复建立顶堆交换
+
+case144:#spilt
+
+case145:#re.search
+
+case146:#urllib
+
+case147:#整数与IP地址互转
+
+case149hex2binary:import binascii
+
+case149hex2binary_2:hex_data = "12345678987654323abcdef54565"
+
+case149random_more:import string
+
+case149_random:import random
+
+case152_cp:#for i in dc_21 dc_22
+
+case157vlan:'''
+
+case157_sdns:#slb real http "Gao_1_1" 88.8.1.1 80 0 http 3 3
+
+case157_xsh:'''
+
+case161queryperf:#www.gaov6_2.com AAAA
+
+case163wehook:import http.client, urllib
+
+case163xmlrpc:import http.client, urllib
+
+case164restapi:import http.client, urllib
+
+case165devide:import socket
+
+case168_build_10_4_5_infosec_HG:import requests
+
+case169_DNS:import socket
+
+case169_DNS_send:import socket
+
+case169_DNS_send_thread:import socket
+
+case170_long:import requests
+
+case185post_doh:import http.client, urllib
+
+case186base64url:import base64 
+
+case188moressh:#! /bin/python3
+
+case189moressh2:# 多台设备批量执行ssh命令
+
+case190gaotest:import dns.message
+
+case196:import binascii
+
+case196_cve_gao:import httpx
+
+case196_http2_c:import httpcore
+
+case197_cve copy_nouse:import h2
+
+case197_cve1018:import threading
+
+case197_cveeeee_thread:import ssl
+
+case197_cve_one:import ssl
+
+case197_http2_c copy 2:import http.client
+
+case197_http2_c copy:import concurrent.futures
+
+case197_http2_c:import httpx
+
+case197_http2_while:import httpx
+
+case198compare:import re
+
+case199excel_copy:import pandas as pd
+
+case200_locust copy:# This locust test script example will simulate a user 
+
+case200_locust:import os
+
+case201_method:import random
+
+case203more_key_value:import random
+
+case204bkdrhash:def bkdrhash(hash_str):
+
+case205_srcport:#author:gaozc
+
+case207ping_delay:#author:gaozc
+
+case207syn_delay:#author:gaozc
+
+case208all:#author:gaozc
+
+case208ping_time:import subprocess
+
+case209qrcode:import pyqrcode
+
+case210_hex_num:#HTTP/2 RST PACKET
+
+case211_write:import os
+
+case212more_ipv4:import os
+
+case212more_ipv6:import os
+
+case213_33950:with open('D:/Python_case_100/YunShangfuzai', 'r', encoding='utf-8') as infile:
+
+case215_update_file:import os
+
+case216_keepport:keepport = 53330
+
+case218_dns_name:import random
+
+case220_:#
+
+case221_test:#test self
+
+0327:ICMP：差错通知+信息查询
 

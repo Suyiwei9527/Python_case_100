@@ -11,6 +11,6 @@ def insertionsort(l):
         while preindex >= 0 and current < l[preindex]:#比current大的向后移动
             l[preindex+1] = l[preindex]
             preindex -= 1
-        l[preindex+1] = current#待排的数更大的话插入到正确位置
+        l[preindex+1] = current#跳出循环时待排的数最小，取代循环中的l[preindex]
     return l
 print(insertionsort(l))

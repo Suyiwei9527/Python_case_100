@@ -56,9 +56,6 @@ firewall：查看会话表
 实现包过滤的核心技术是访问控制列表
 域间安全策略：域间流量的转发（转发策略）适用于接口加入不同安全区域的场景
 
-(GRE)General Routing Encapsulation，三层VPN封装技术，对网络层协议进行封装，再另一种网络中传输。
-GRE上层协议是IP，协议号为47
-
 FTP主动连接：PORT  S通过port:20主动与客户端建立数据连接
 FTP被动连接：PASV  S被动等待客户端连接，然后向客户端发送数据
 PORT+SNAT   S在公网，C需要SNAT访问
@@ -84,6 +81,75 @@ no-reverse：Server-map表只有正方向，内部服务无法主动访问外部
 
 DDOS（Distributed Denial of Service）：SYN Flood、UDP Flood、ICMP Flood、HTTP Flood、DNS Flood（网络带宽拥塞，威胁Server正常提供业务）
 DOS（Denial of Service）：单包攻击，扫描类攻击、畸形报文类攻击、特殊报文类攻击
+
+
+GRE：General Routing Encapsulation，三层VPN封装技术，对网络层协议进行封装，再另一种网络中传输。
+GRE上层协议是IP，协议号为47
+
+OSPF：Open Shortest Path First，SPF是OSPF的核心思想
+IP协议号89,工作在单个AS，Interior Gateway Protocol，即IGP
+没有跳数限制、可手工汇总到任意掩码长度
+路由有变化时/路由刷新时间到达，才会发送更新
+管理距离(Ddministrative Distance)为110
+作为链路状态路由协议，交换 路由表+链路状态
+LSA（Link State Advertisement）就是OSPF接口上的描述信息：IP地址、子网掩码、网络类型、Cost值
+网络规模大时LSA将生成庞大的数据库，增大计算压力，所以需要分区域；区域内有精确的LSA，不同区域传递简化的LSA；为了无环，设计时采用Hub-Spoke的拓朴架构，核心与分支拓扑。
+区域0为backbone区域，所有normal区域应该直接和区域0相连，交换LSA；normal区域之间即使直连也无法交换LSA；基于路由器接口划分的；
+路由器属于单个区域，则所有接口为同一区域，为Internal Router
+所有接口不为同一区域，为Area Border Router
+将外部路由协议重分布进OSPF为Autonomous System Boundary Router
+同区域的路由Intra-Area：O表示
+不同区域的路由Inter-Area Route或Summary Route：O IA
+非OSPF路由/不同OSPF进程的路由被重分布到OSPF为External Route：O E2或OE 1
+O — O IA — O E1 — O E2
+OSPF只有Neighbor之间才交换LSA，OSPF邻居通过发送Hello包来建立和维护：Area-id、Hello and Dead Interval、Authentication（相同认证、密码）、Stub Area Flag（处在相同的末节区域）
+能交换LSA才为邻接（Adjacency）关系
+多个OSPF路由器在一个多路访问网段时，LSA很多，需要指定Designated Router，Drother与DR互换LSA（与OSPF区域没有任何关系）
+HELLO--->DBD(Database Description Packets)--->LSR(Link-state Request)--->LSU(Link-state update)--->LSAck
+	     LSA基本描述信息
+Down--->Attempt--->Init--->Two-way--->Exstart--->Exchange--->Loading--->Full
+						   建立邻居关系 确定主从关系
+ABR将外部路由从ASBR所在区域转发到其他区域时需要发送单独的LSA（第四类LSA）来告知如何到达ASBR的Router-ID
+外部路由的下一跳不在OSPF进程中，Forward Address设置为0.0.0.0，
+
+多种区域类型、网络类型、链路类型、路由器身份--->多样LSA
+类型1，Router Link:区域内传递，一个路由器只有一条，描述直连链路、接口状态
+类型2，Network Link：只有在选举DR/BDR的网络类型中才会产生，描述广播网络的接入路由器列表及掩码
+类型3，Summary Link：ABR汇总LSA1后发给其他区域
+类型4，ASBR Summary Link：ABR需要发送单独的LSA来告知如何到达ASBR的Router-ID
+类型5，External Link：ASBR将外部路由重分布进OSPF产生，包含Forward Address
+类型7，NSSA Link：位于NSSA区域的ASBR将外部路由发布进OSPF产生，只能在NSSA区域传递；传递到其他区域需ABR转Type 5
+
+Link State ID：LSA描述的链路的标识，LSA真正的内容
+
+
+
+ISIS（Intermediate System-to-Intermediate System）：基于链路状态并使用SPF进行路由计算的一种IGP协议，用于ISPLSP（Link State Protocol Data Unit）链路状态协议数据单元
+ISIS链路状态数据库时LSP的集合分为level-1和level-2
+工作在数据链路层，支持P2P和Broadcast 网络类型
+
+协议优先级：15
+必需有一个称为Network Entity Title的网络地址8-20字节
+在 IP 环境下 NET 格式为：区域 ID (1 字节)+系统 ID（6 个字节）+SEL （1 个字节），NET是特殊的NSAP，SEL为00
+
+Level-1路由器（只能创建level-1的LSDB） 同一区域
+Level-2路由器（只能创建level-2的LSDB） 不同区域
+Level-1-2路由器（路由器默认的类型，能同时创建level-1和level-2的LSDB） 跨区域
+IS-IS的骨干区域：所有的L2路由器（含L1-2）组成的 （连续）
+
+HELLO(is-is Hello PDUs)：Broadcast L1-Hello、Broadcast L2-Hello 、P2P Hello
+LSP（Link State Protocol Data Unit）链路状态协议数据单元，分为Level-1、Level-2，交换链路状态信息
+SNP PDU
+CSNP：Complete Sequence Number PDU，同步LSDB
+PSNP：Partial Sequence Number PDU，请求/确认特定LSP更新
+
+只有同一层次的相邻路由器才有可能成为邻居
+对于Level-1路由器来说，区域号必须一致
+链路两端IS-IS接口的网络类型必须一致
+链路两端IS-IS接口的地址必须处于同一网段
+
+DIS（Designated Intermediate System），周期性10s发送CSNP报文、创建和更新伪节点（Pseudonodes）、生成伪节点的LSP
+建立邻接关系--->组播地址通告自己的LSP--->DIS收集LSP，每10s发送一次CSNP（所有LSP摘要信息）--->与LSDB对比向DIS发送PSNP--->DIS回复请求中的LSP
 
 本地创建ssh key
 ssh-keygen -t rsa -C "your_email@youremail.com"
@@ -138,3 +204,4 @@ wrk轻量化的HTTP性能测试工具，采用线程+网络异步IO模型--->很
 
 locust是简单易用的分布式负载测试工具，主要用来对网站进行负载测试，借助协程实现对用户的模拟。
 
+应用交付在极大提高企业核心应用和业务平台的可用性、性能以及安全性的同时，降低企业数据中心成本和复杂性；新一代的应用负载均衡和性能优化产品，仅仅通过一个功能强大的系统，即可提供高度集成的应用交付功能。

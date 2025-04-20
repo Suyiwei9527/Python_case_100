@@ -1,9 +1,10 @@
 #读目录下所有文件的第一行，写入另一文件
 import os
 import re
-pathdir = "G:\\TEST"
+pathdir = "D:\\Python_case_100\\Gao"
 files = os.listdir(pathdir)
-files.sort(key = lambda i:int(re.search('(\d+)',i).group()))
+#files.sort(key = lambda i:int(re.search('(\d+)',i).group()))
+files.sort(key=lambda x: int(re.search(r'(\d+)', x).group(1)) if re.search(r'\d+', x) else 0)
 title = ""
 line = ""
 name = ""
