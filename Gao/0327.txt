@@ -4,24 +4,24 @@ code：0	网络不可达
 code：1 	主机不可达
 code：2 	协议不可达
 code：3 	端口不可达（UDP端口扫描）
-code：4	需要分片，但DF（Don't Fragment）置位（MTU探索）
+code：4		需要分片，但DF（Don't Fragment）置位（MTU探索）
 
 type：5	改变路由
 code：0	特定网络路由改变
-code：1 	特定主机路由改变
+code：1 特定主机路由改变
 
 type：4	code：0	源点抑制（数据包来不及处理，向送信方发送该报文，减慢发送速度）
 
 type：11	超时
 code：0	由于TTL为0的超时（traceroute原理）
-code：1 	规定时间没有收到所有的分片
+code：1 规定时间没有收到所有的分片
 
 16-bit TCP checksum：checksum TCP segment (TCP HEADER + TCP DATA)，以16位字进行计算，发送端计算存储，接收端验证。
 紧急指针：URG置1时有效，是一个正的偏移量，urgent+sequence number表示紧急数据最后一个字节序号
 
-three-way handshake								
-C：发完SYN后       CLOSED----->SYN_SENT         CLOSED----->LISTEN（一开始便处于LISTEN） 
-                                                S：收到SYN后完SYN+ACK后    LISTEN----->SYN-RCVD
+three-way handshake							CLOSED----->LISTEN（一开始便处于LISTEN）	
+C：发完SYN后       CLOSED----->SYN_SENT          
+                                                S：收到SYN发SYN+ACK后    LISTEN----->SYN-RCVD
 C：回复ACK后       SYN_SENT ----->ESTABLISHED      						
 												S：收到ACK后           	   SYN-RCVD----->ESTABLISHED
 												
@@ -48,6 +48,17 @@ FIN_WAIT_2 timer：FIN_WAIT_2下被动关闭的一端网络断掉或宕机无法
 
 分布式：协议计算的控制平面和报文转发的数据平面
 SDN（Software Defined Network）软件自定义网络，OPenFlow使网络向软件一样灵活编程
+
+VXLAN（Virtual eXtensible Local Area Network），实际是VPN技术，能够在任意路由可达的物理网络（Underlay网络），通过VXLAN网关之间的VXLAN隧道实现网络内部的互通
+使用MAC in UDP的封装方式，基于4789
+根据VXLAN隧道端点（VTEP（VXLAN Tunnel End Point））设备不同形态分为：
+Network Overlay：两个端点都是物理交换机（集中式网关：终端设备集中在少数几个网关、分布式网关：分布在多个网关上）
+Host Overlay：两个端点都是虚拟交换机，物理交换机仅负责IP报文的高速转发，不参与VXLAN的具体处理。
+Hybrid Overlay：隧道的端点既可以是虚拟交换机，也可以是物理交换机
+NVE (Network Virtualization Edge)：实现网络虚拟化功能的网络设备
+VTEP (VXLAN Tunnel Endpoints)：XLAN隧道端点，位于NVE中，负责VXLAN报文的封装和解封装
+VNI (VXLAN Network Identifier)： （L2 VNI：类似于VLAN ID，用于标识二层广播域）、（ L3 VNI：标识VPN实例，支持跨子网转发）
+BD (Bridge Domain)：类似于传统网络中的VLAN，用于划分广播域。BD与VNI以1:1方式映射，同一BD内的终端可以进行二层通信
 
 防火墙本质就是 filter-policy
 firewall：查看会话表
@@ -83,7 +94,7 @@ DDOS（Distributed Denial of Service）：SYN Flood、UDP Flood、ICMP Flood、H
 DOS（Denial of Service）：单包攻击，扫描类攻击、畸形报文类攻击、特殊报文类攻击
 
 
-GRE：General Routing Encapsulation，三层VPN封装技术，对网络层协议进行封装，再另一种网络中传输。
+GRE：General Routing Encapsulation，三层VPN封装技术，对网络层协议进行封装，在另一种网络中传输。
 GRE上层协议是IP，协议号为47
 
 OSPF：Open Shortest Path First，SPF是OSPF的核心思想
@@ -122,8 +133,6 @@ ABR将外部路由从ASBR所在区域转发到其他区域时需要发送单独�
 
 Link State ID：LSA描述的链路的标识，LSA真正的内容
 
-
-
 ISIS（Intermediate System-to-Intermediate System）：基于链路状态并使用SPF进行路由计算的一种IGP协议，用于ISPLSP（Link State Protocol Data Unit）链路状态协议数据单元
 ISIS链路状态数据库时LSP的集合分为level-1和level-2
 工作在数据链路层，支持P2P和Broadcast 网络类型
@@ -151,50 +160,6 @@ PSNP：Partial Sequence Number PDU，请求/确认特定LSP更新
 DIS（Designated Intermediate System），周期性10s发送CSNP报文、创建和更新伪节点（Pseudonodes）、生成伪节点的LSP
 建立邻接关系--->组播地址通告自己的LSP--->DIS收集LSP，每10s发送一次CSNP（所有LSP摘要信息）--->与LSDB对比向DIS发送PSNP--->DIS回复请求中的LSP
 
-本地创建ssh key
-ssh-keygen -t rsa -C "your_email@youremail.com"
-git hub增加ssh key
-
-设置username email
-设置username emailgit config --global user.name "your name"
-git config --global user.email "your_email@youremail.com"
-
-git clone从现有Git仓库拷贝项目
-git clone git@github.com:Suyiwei9527/Python_case_100.git
-
-本地仓库由working dir、Index、HEAD组成
-
-提出更改（添加到暂存区）
-git add <filename>
-git add *
-实际提交改动（提交到HEAD）
-git commit -m 'add syn-syn time diff script'
-提交到远端仓库
-git push origin main
-
-未克隆现有仓库
-git remote add origin <server>
-origin：远程仓库的名称
-
-创建feature_x分支
-git checkout -b feature_x
-切回主分支
-git checkout master
-删除feature_x分支
-git checkout -d feature_x
-
-更新本地仓库至最新（工作目录中获取并合并远端改动）
-git pull
-变基
-git pull --rebase
-
-HEAD中的最新内容替换掉你的工作目录filename，已添加到暂存区的改动以及新文件都不会受到影响。
-git checkout -- <filename>
- 
-丢弃本地所有改动与提交
-git fetch origin（从服务器上获取最新版本）
-git reset --hard origin/main
-
 JMeter是Apache基于Java开源的压力测试工具、接口测试工具
 基于协议、通过进程下启动线程方式模拟并发用户
 依靠线程数提高并发量，单机模拟数以千计并发用户，对CPU、内存消耗大
@@ -205,3 +170,56 @@ wrk轻量化的HTTP性能测试工具，采用线程+网络异步IO模型--->很
 locust是简单易用的分布式负载测试工具，主要用来对网站进行负载测试，借助协程实现对用户的模拟。
 
 应用交付在极大提高企业核心应用和业务平台的可用性、性能以及安全性的同时，降低企业数据中心成本和复杂性；新一代的应用负载均衡和性能优化产品，仅仅通过一个功能强大的系统，即可提供高度集成的应用交付功能。
+
+IP Sec：基于网络层的安全通信协议簇，通过在数据包中插入一个预定义头部保证安全
+AH(Authentication Header)、ESP(Encapsulating Security Payload)用于提供安全服务；ESP:50、AH:51
+IKE（Internet Key Exchange）协议用于密钥交换
+传输模式：主机和主机之间端到端通信的数据保护，原始IP头与数据之间插入IPSec包头
+隧道模式：私网与私网之间通过公网进行通信，原始IP包头+数据被保护，生成新的IP包头
+保护第一个IP包之前必须先建立SA(安全联盟)，通过IKE协商自动化建立SA
+第一阶段：建立一个安全的通道，IKE SA
+第二阶段：通过第一阶段的安全通道协商具体的SA（IPSec SA），用于最终的数据传输；协商：加密、Hash、安全协议、封装模式、存活时间
+（协商安全参数保护数据连接、周期性的对数据连接更新密钥信息）
+第一阶段分为主模式（传递自己的出口IP地址做身份标识）、野蛮模式（用户名或IP等作为双方认证标识，身份信息未被加密）
+
+HTTP（HyperText Transfer Protocol）超文本传输协议,规定了浏览器和万维网服务器之间互相通信的规则
+无状态协议（协议对于事务处理没有记忆能力，Web浏览器与Web服务器不需要建立持久连接）
+工作于客户端-服务端架构上
+会话指一个C与A之间连续发生的一系列请求和响应过程，之间产生的状态信息为会话状态，通过SessionID来标识不同的会话（Cookie技术）
+Cookie技术：在客户端保持HTTP状态信息；Server响应Set-Cookie，Client增加Cookie头回传给服务端
+Session技术：Cookie较多会降低传输效率会话状态保存在服务器端的技术
+
+连接到 MySQL 数据库：mysql -u 用户名 -p
+查看所有数据库：SHOW DATABASES;
+选择一个数据库：USE DATABASES;
+查看所有表：SHOW TABLES;
+查看表结构：DESCRIBE 表名;
+创建一个新数据库：CREATE DATABASE 数据库名;
+删除一个数据库：DROP DATABASE 数据库名;
+创建一个新表：	CREATE TABLE 表名 (列名1 数据类型 [约束], 列名2 数据类型 [约束], ...);
+删除一个表：DROP TABLE 表名;
+插入数据：INSERT INTO 表名 (列1, 列2, ...) VALUES (值1, 值2, ...);
+查询数据：SELECT 列1, 列2, ... FROM 表名 WHERE 条件;
+更新数据：UPDATE 表名 SET 列1 = 值1, 列2 = 值2, ... WHERE 条件;
+删除数据：DELETE FROM 表名 WHERE 条件;
+创建用户：CREATE USER '用户名'@'主机' IDENTIFIED BY '密码';
+授权用户：GRANT 权限 ON 数据库名.* TO '用户名'@'主机';
+刷新权限：FLUSH PRIVILEGES;
+查看当前用户：SELECT USER();
+查看数据库详细信息：SHOW CREATE DATABASE 数据库名;
+修改表结构：
+ALTER TABLE 表名 ADD 列名 数据类型 [约束];
+ALTER TABLE 表名 DROP 列名;
+ALTER TABLE 表名 MODIFY 列名 数据类型 [约束];
+ALTER TABLE 表名 CHANGE 旧列名 新列名 数据类型 [约束];
+查看表的索引：SHOW INDEX FROM 表名;
+创建索引：CREATE INDEX 索引名 ON 表名 (列名);
+删除索引：DROP INDEX 索引名 ON 表名;
+
+UNION:连接两个以上的SELECT语句的结果组合到一个结果集合，并去除重复的行。
+UNION ALL 不去除重复行
+GROUP BY:根据一个或多个列对结果集进行分组,在分组的列上我们可以使用 COUNT, SUM, AVG,等函数。
+JOIN：从多个数据表中读取数据
+NNER JOIN（内连接,或等值连接）：获取两个表中字段匹配关系的记录。
+LEFT JOIN:LEFT JOIN 返回左表的所有行，并包括右表中匹配的行，如果右表中没有匹配的行，将返回 NULL 值
+

@@ -1,3 +1,47 @@
+本地创建ssh key
+ssh-keygen -t rsa -C "your_email@youremail.com"
+git hub增加ssh key
+
+设置username email
+设置username emailgit config --global user.name "your name"
+git config --global user.email "your_email@youremail.com"
+
+git clone从现有Git仓库拷贝项目
+git clone git@github.com:Suyiwei9527/Python_case_100.git
+
+本地仓库由working dir、Index、HEAD组成
+
+提出更改（添加到暂存区）
+git add <filename>
+git add *
+实际提交改动（提交到HEAD）
+git commit -m 'add syn-syn time diff script'
+提交到远端仓库
+git push origin main
+
+未克隆现有仓库
+git remote add origin <server>
+origin：远程仓库的名称
+
+创建feature_x分支
+git checkout -b feature_x
+切回主分支
+git checkout master
+删除feature_x分支
+git checkout -d feature_x
+
+更新本地仓库至最新（工作目录中获取并合并远端改动）
+git pull
+变基
+git pull --rebase
+
+HEAD中的最新内容替换掉你的工作目录filename，已添加到暂存区的改动以及新文件都不会受到影响。
+git checkout -- <filename>
+ 
+丢弃本地所有改动与提交
+git fetch origin（从服务器上获取最新版本）
+git reset --hard origin/main
+
 PVWJZBHLVZCVCYJM
 负数 在计算机中以补码形式存储
 
@@ -139,6 +183,23 @@ try-finally无论是否发生异常都将执行最后的代码
 使用raise 语句抛出一个指定的异常：raise [Exception [, args [, traceback]]]
 预定义清理行为：一些对象定义了标准的清理行为，无论系统是否成功使用，不需要它时标准的清理就会执行
 with open ("test.txt") as f:该文件总是会关闭
+
+命名空间：从名称到对象的映射，大部分都是通过dict实现的，提供了在项目中避免名字冲突的一种方法
+内置名称： Python 语言内置的名称
+全局名称：模块中定义的名称
+局部名称：函数中定义的名称
+生命周期：取决于对象的作用域，如果对象执行完成，则该命名空间的生命周期就结束
+作用域：Python程序可以直接访问命名空间的正文区域
+
+使用 global 可以在函数中修改全局变量。
+使用 nonlocal 可以在嵌套函数中修改外部函数的变量。
+
+模块（Module）是一个包含Python定义和语句的文件，文件名就是模块名加上.py后缀
+代码复用、命名空间管理、代码组织
+包:管理 Python 模块命名空间的形式,采用"点模块名称"
+在导入包时， sys.path 中的目录来寻找这个包中包含的子目录,只有包含 __init__.py 的文件才会被认作是一个包
+from package import item对应的 item 既可以是包里面的子模块（子包），或者包里面定义的其他名称，比如函数，类或者变量(import把item当作包--->模块--->还没找到，抛出:exc:ImportError 异常)
+import item.subitem.subsubitem ,除了最后一项，都必须是包，而最后一项则可以是模块/是包，但是不可以是类/函数/变量的名字。
 
 内部排序：只使用内存
 交换排序：冒泡排序、快速排序
