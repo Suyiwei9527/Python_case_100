@@ -141,7 +141,6 @@ a = {x for x in 'abracadabra' if x not in 'abc'}
 {'r', 'd'}
 
 迭代器有两个基本方法：iter() 和 next()。
-
 使用了yield的函数称为生成器
 
 面向对象：
@@ -201,7 +200,104 @@ with open ("test.txt") as f:该文件总是会关闭
 from package import item对应的 item 既可以是包里面的子模块（子包），或者包里面定义的其他名称，比如函数，类或者变量(import把item当作包--->模块--->还没找到，抛出:exc:ImportError 异常)
 import item.subitem.subsubitem ,除了最后一项，都必须是包，而最后一项则可以是模块/是包，但是不可以是类/函数/变量的名字。
 
+线程模块
+_thread、threading
+threading.Thread(target, args=(), kwargs={}, daemon=None)：
+
+正则表达式：字符序列，re模块来处理正则表达式（一组函数允许匹配、搜索和替换操作）
+re.match(pattern, string, flags=0)：从字符串的起始位置匹配
+group(num) 或 groups() 匹配对象函数来获取匹配表达式
+re.search(pattern, string, flags=0)：扫描整个字符串并返回第一个成功的匹配
+
+re.sub：替换字符串中的匹配项
+re.sub(pattern, repl, string, count=0, flags=0)
+repl : 替换的字符串，也可为一个函数。
+count : 模式匹配后替换的最大次数，默认 0 表示替换所有的匹配。
+
+compile ：编译正则表达式，生成正则表达式（ Pattern ）对象，给match() 和 search() 这两个函数使用
+re.compile(pattern[, flags])
+
+findall：字符串中找到匹配的所有子串，返回一个列表
+re.findall(pattern, string, flags=0)
+或
+pattern.findall(string[, pos[, endpos]])
+
+re.finditer：和findall类似，把它们作为一个迭代器返回
+re.split：按匹配的子串将字符串分割后返回列表
+re.split(pattern, string[, maxsplit=0, flags=0])
+maxsplit：分割次数，默认为 0，不限制次数。
+
+OS模块提供与操作系统交互的功能
+文件操作、目录操作、环境变量管理、进程管理
+os.getcwd()：获取当前工作目录的路径
+os.chdir(path) ：改变当前工作目录
+os.listdir(path)：列出指定目录中的所有文件和子目录
+os.mkdir(path) ：创建一个新的目录
+os.rmdir(path)：删除一个空目录
+os.remove(path)：删除一个文件
+os.rename(src, dst) ：重命名文件或目录
+os.getenv(key)：获取指定环境变量的值
+os.system(command)： shell 中执行命令
+os.symlink(src, dst)：创建一个软链接
+
 内部排序：只使用内存
 交换排序：冒泡排序、快速排序
 插入排序：直接插入排序、希尔排序
 选择排序：简单选择排序、堆排序
+
+进程、线程区别：是实现并发编程的两个核心概念
+Process（ multiprocessing 模块）：操作系统分配资源（CPU、内存等）的基本单位，每个进程拥有独立的内存空间，彼此隔离。
+独立性‌：进程间数据不共享，需通过 IPC（进程间通信，如管道、队列）交换数据。
+资源开销大‌：创建进程需要复制父进程的资源（如 Python 的 multiprocessing 模块）。
+多核并行‌：Python 的多进程可绕过全局解释器锁（GIL），充分利用多核 CPU。
+适用场景‌：CPU 密集型任务（如数值计算）。
+
+Thread（threading 模块）：进程内的执行单元，共享同一进程的内存和资源。
+共享内存‌：线程间可直接读写同一进程的全局变量，但需同步机制（如锁）避免竞争。
+资源开销小‌：创建和切换线程比进程更快。
+受 GIL 限制‌：同一时刻仅一个线程执行 Python 字节码。
+适用场景‌：I/O 密集型任务（如网络请求、文件读写）。对于 I/O 密集型任务，也可结合协程（如 asyncio）进一步提升效率。
+每个线程都有他自己的一组CPU寄存器，称为上下文，反映线程上次运行该线程的CPU寄存器的状态
+指令指针、堆栈指针寄存器是线程上下文中最重要的寄存器，线程总是在进程的上下文中运行的，这些地址都用于标志拥有线程的进程地址空间中的内存
+可以被抢断、可以暂时搁置
+内核线程（内核创建和撤销）、用户线程（在用户程序中实现的线程）
+使用线程：函数、类来包装线程对象
+threading 模块：
+threading.Thread(target, args=(), kwargs={}, daemon=None)：
+创建Thread类的实例
+target：线程执行的目标函数。
+args：目标函数的参数，以元组形式传递。
+kwargs：目标函数的关键字参数，以字典形式传递。
+daemon：指定线程是否为守护线程。
+
+协程：
+多线程应用，CPU通过切片方式来切换（需要耗时：保存状态，下次继续）线程间的执行。协程则只使用一个线程，规定某个代码块的执行顺序，当程序中存在大量不需要CPU的操作时（IO），适用于协程
+用户态的轻量级线程，允许在单线程内实现多个任务的协作式切换，无需依赖操作系统的线程调度，主动让出控制权，不是强制中断
+greenlet：
+指使用一个任务调度器和一些生成器或者协程实现协作式用户空间多线程的一种伪并发机制，即微线程
+生成器函数或者协程函数中的yield语句挂起函数的执行，直到稍后使用next()或send()操作进行恢复为止。可使用一个调度器循环在一组生成器函数之间协作多个任务。
+不是一种真正的并发机制，而是在同一线程内，在不同函数的执行代码块之间切换，切换时指定何时切换以及切换到哪，本质是一种合理安排了的串行。
+
+GIL是什么？作用？
+---Global Interpreter Lock，全局解释器，是Cpython解释器中的一个机制；
+是一个互斥锁，确保同一时刻仅有一个线程执行Python字节码，作用于整个解释器进程，影响多线程执行效率
+对于I/O密集型任务（网络请求，文件读写），线程在等待I/O时释放GIL，允许其他线程运行，提升效率
+CPU密集型多线程任务（科学计算、图像处理）无法利用多核，因同一时间仅一线程运行
+是Cpython为平衡实现复杂性与线程安全进入的机制，简化开发但是限制了多线程CPU任务的性能
+
+数组和列表的区别
+给一个数组和目标值，找出该数组中和为目标值的两个数
+无重复字符的最长字串
+迭代器和生成器的区别
+深拷贝和浅拷贝的区别
+读取一个内存很大的文件，应该怎么读取
+ip地址的排序
+虚拟内存和物理内存有什么区别，内存满了怎么办
+tcp的校验和有什么作用
+socket和websocket有什么区别和联系
+如何在Python中实现单例模式？
+
+
+__name__是什么
+__new__() 和 __init__()的区别
+read()、readline()和readlines()的区别

@@ -5,13 +5,11 @@ for i in range (15):
     l.append(random.randint(1,100))
 print(l)
 def selectsort(l):
-    l_new = []
-    while(len(l) > 0):
-        min = l[0]
-        for i in range(len(l)):
-            if l[i] < min:
-                min = l[i]
-        l_new.append(min)
-        l.remove(min)
-    return l_new
+    for i in range(len(l)-1):
+        minIndex = i#默认当前是最小值
+        for j in range(i+1,len(l)):
+            if l[j] < l[minIndex]:
+                minIndex = j#找到最小值
+        l[minIndex],l[i]=l[i],l[minIndex]#找到的最小值放到外循环最小值的位置
+    return l
 print(selectsort(l))

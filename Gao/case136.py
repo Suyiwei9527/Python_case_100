@@ -12,7 +12,7 @@ def partition(l,left,right):
         while(right > left and l[left] <= l[key]):
             left += 1
         l[left],l[right] = l[right],l[left]
-    l[left],l[key] = l[key],l[left]
+    l[left],l[key] = l[key],l[left]#基准正确的位置，保证左侧都小于基准，右侧都大于基准
     return left
 def quicksort (l,left,right):
     if left >= right:

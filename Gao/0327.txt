@@ -16,8 +16,53 @@ type：11	超时
 code：0	由于TTL为0的超时（traceroute原理）
 code：1 规定时间没有收到所有的分片
 
-16-bit TCP checksum：checksum TCP segment (TCP HEADER + TCP DATA)，以16位字进行计算，发送端计算存储，接收端验证。
-紧急指针：URG置1时有效，是一个正的偏移量，urgent+sequence number表示紧急数据最后一个字节序号
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|          Source Port          |       Destination Port        |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                        Sequence Number                        |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                    Acknowledgment Number                      |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  Data |           |U|A|P|R|S|F|                               |
+| Offset| Reserved  |R|C|S|S|Y|I|            Window             |
+|       |           |G|K|H|T|N|N|                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|           Checksum            |         Urgent Pointer        |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                    Options                    |    Padding    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                             data                              |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+1.Source Port：客户端发起连接的端口
+2.Destination Port：TCP以端口来标识服务
+3.Sequence Number：序列号指定本TCP段发送payload的第一个字节，还用于传输后的排序
+4.Acknowledgment Number：确认号指明期望发送者发送的下一个序列号，ACK标志置位
+5.Data Offset：TCP首部长度，以4字节为单位，最少为20（4*5）字节
+6.Reserve：保留字段
+7.Flags：URG、ACK、PSH、RST、SYN、FIN
+URG：URGent，紧急置位表明报文段中有紧急数据需要尽快传送，不用在缓存中排队
+ACK：Acknowledgment，用于确认数据收到，在TCP传输数据的过程中均置位
+PSH：Push，表明接收方需尽快将数据传递给应用程序，不用等缓存满了再发送
+RST：Reset，该标志用来在传输错误时重置连接
+SYN：Synchronization，三次握手的第一个包，该标志置位意味着启动了连接
+FIN：Finish，改标志用来向对方发送结束传输的新号
+8.Window Size：通知发送方本机接收缓冲区的大小进行流量控制
+9.Chechsum：校验段首部+数据部分+伪首部（源目的IP、保留字节、协议号、TCP报文长度）
+以16位字进行计算，发送端计算存储，接收端验证。
+pseudo header：
++--------+--------+--------+--------+
+|           Source Address          |
++--------+--------+--------+--------+
+|         Destination Address       |
++--------+--------+--------+--------+
+|  zero  |  PTCL  |    TCP Length   |
++--------+--------+--------+--------+
+The TCP Length is the TCP header length plus the data length in octets
+10.Urgent pointer：紧急指针配合URG Flags使用，指出本报文段中的紧急数据的字节数
+是一个正的偏移量，urgent+sequence number表示紧急数据最后一个字节序号
+11.Options：最常见的是需要定义maximum segment size时使用，必须是32bit的倍数，不够时需要用0填充
 
 three-way handshake							CLOSED----->LISTEN（一开始便处于LISTEN）	
 C：发完SYN后       CLOSED----->SYN_SENT          
@@ -160,6 +205,57 @@ PSNP：Partial Sequence Number PDU，请求/确认特定LSP更新
 DIS（Designated Intermediate System），周期性10s发送CSNP报文、创建和更新伪节点（Pseudonodes）、生成伪节点的LSP
 建立邻接关系--->组播地址通告自己的LSP--->DIS收集LSP，每10s发送一次CSNP（所有LSP摘要信息）--->与LSDB对比向DIS发送PSNP--->DIS回复请求中的LSP
 
+
+BGP（Border Gateway Protocol）：实现AS（Autonomous System）之间的路由可达并选择最佳路由的距离矢量协议
+管理规模不断扩大的网络--->分成不同的AS，EGP（Exterior Gateway Protocol）实现AS间动态交换路由信息，设计简单（只发布可达的路由信息，不优选，未考虑环路避免）
+BGP是取代EGP的另一种外部网关协议（路由优选、避免路由环路、高效传递路由和维护大量路由信息）
+认证和GTSM的方式--->安全性
+路由策略--->灵活选路，指导邻居按策略发布路由
+路由聚合、路由衰减--->防止路由震荡，提高稳定性
+使用TCP（179）作为传输层协议--->保证可靠性
+邻居数目多、路由量大且大部分邻居拥有相同出口的策略下，使用按组打包技术--->提高打包发包性能
+
+AS（Autonomous System）:一个实体管辖下拥有的相同选路策略的IP网络，AS号：2、4字节
+按照运行方式：
+EBGP（External/Exterior BGP）：运行于不同AS之间的BGP，为防止AS间产生环路，收到EBGP发送的路由时，将带有本地AS号的路由丢弃
+IBGP（Internal/Interior BGP）：运行与同一AS内部的BGP，为防止AS内产生环路，BGP不将从IBGP学到的路由通告给其他IBGP对等体，并与所有IBGP建立全连接；为解决IBGP对等体的连接数量太多，BGP设计了反射器和BGP联盟
+BGP报文交互角色：
+Speaker：发送BGP报文的设备，它接受和产生新的报文信息并Advertise给其它BGP Speaker
+Peer：相互交换报文的Speaker之间互称为对等体，若干相关的对等体构成对等体组（Peer Group）
+BGP的路由器号（Router ID）：标识BGP设备，32位值，通常是IPv4地址的形式，BGP会话建立时发送的OPEN报文中携带；Peer之间建立BGP会话，必须有唯一的Router ID
+Router ID手工配置/设备自动选取：Loopback接口--->接口中最大的IPv4地址
+
+BGP对等体的建立、更新和删除等交互过程：
+Open 报文：建立BGP对等体连接。
+Update 报文：在对等体之间交换路由信息。
+Notificatio n报文：中断BGP连接。
+Keepalive 报文：保持BGP连接。
+Route-refresh 报文：用于在改变路由策略后请求对等体重新发送路由信息。只有支持（Route-refresh）能力的BGP设备会发送和响应此报文。
+Idle--->Connect--->Active/OpenSent--->OpenConfirm--->Established
+    （Connect Retry）
+	
+BGP与IGP使用不同的路由表，为了不同的AS间相互通信，BGP需要与IGP交互，即BGP、IGP路由表相互引入
+BGP引入IGP路由：BGP协议本身不发现路由,需要将其他路由引入到BGP路由表，实现AS间的路由互通;一个AS需要将路由发布给其他AS时,AS边缘路由器会在BGP路由表中引入IGP的路由(更好的规划网络--->路由策略进行路由过滤和路由属性设置,也可设置MED值指导EBGP对等体判断流量进入AS时选路)
+Import方式:按协议类型将RIP、OSPF、ISIS等协议的路由引入到BGP路由表中,还可以引入静态路由和直连路由
+Network方式:逐条将IP路由表中已经存在的路由引入到BGP路由表中
+IGP引入BGP路由：当一个AS需要引入其他AS的路由时,AS边缘路由器会在IGP路由表中引入BGP的路由(路由策略，进行路由过滤和路由属性设置避免大量BGP路由对AS内设备造成影响)
+
+BGP路由优选规则和负载分担：在BGP路由表中，到达同一目的可能存在多条路由，BGP选出最佳路由（根据路由优选规则比较属性）并发给其对等体；
+BGP属性：对路由的特定描述
+公认必须遵循（Well-known mandatory）：所有BGP设备都可以识别此类属性，必须存在于Update报文中，如果缺少这类属性，路由信息就会出错。
+
+Origin属性：定义路径信息的来源,标记一条路由是怎么成为BGP路由的
+IGP：最高的优先级，通过network命令注入到BGP路由表的路由
+EGP：通过EGP得到的路由信息
+Incomplete：优先级最低，通过其他方式学习到的路由信息，如BGP通过import-route命令引入的路由
+
+AS_Path属性：按矢量顺序记录了某条路由从本地到目的地址所要经过的所有AS编号，接收路由时AS_Path列表中有本AS号则不接收该路由，避免AS间的路由环路
+
+
+公认任意（Well-known discretionary）：所有BGP设备都可以识别此类属性，不要求必须存在于Update报文中，即就算缺少这类属性，路由信息也不会出错。
+可选过渡（Optional transitive）：BGP设备可以不识别此类属性，如果不识别此类属性，会接收这类属性，并通告给其他对等体。
+可选非过渡（Optional non-transitive）：BGP设备可以不识别此类属性，如果不识别此类属性，则会被忽略该属性，且不会通告给其他对等体。
+
 JMeter是Apache基于Java开源的压力测试工具、接口测试工具
 基于协议、通过进程下启动线程方式模拟并发用户
 依靠线程数提高并发量，单机模拟数以千计并发用户，对CPU、内存消耗大
@@ -172,7 +268,7 @@ locust是简单易用的分布式负载测试工具，主要用来对网站进�
 应用交付在极大提高企业核心应用和业务平台的可用性、性能以及安全性的同时，降低企业数据中心成本和复杂性；新一代的应用负载均衡和性能优化产品，仅仅通过一个功能强大的系统，即可提供高度集成的应用交付功能。
 
 IP Sec：基于网络层的安全通信协议簇，通过在数据包中插入一个预定义头部保证安全
-AH(Authentication Header)、ESP(Encapsulating Security Payload)用于提供安全服务；ESP:50、AH:51
+AH(Authentication Header)，协议号51、ESP(Encapsulating Security Payload)用于提供安全服务，协议号50
 IKE（Internet Key Exchange）协议用于密钥交换
 传输模式：主机和主机之间端到端通信的数据保护，原始IP头与数据之间插入IPSec包头
 隧道模式：私网与私网之间通过公网进行通信，原始IP包头+数据被保护，生成新的IP包头
@@ -222,4 +318,7 @@ GROUP BY:根据一个或多个列对结果集进行分组,在分组的列上我�
 JOIN：从多个数据表中读取数据
 NNER JOIN（内连接,或等值连接）：获取两个表中字段匹配关系的记录。
 LEFT JOIN:LEFT JOIN 返回左表的所有行，并包括右表中匹配的行，如果右表中没有匹配的行，将返回 NULL 值
+
+
+
 
