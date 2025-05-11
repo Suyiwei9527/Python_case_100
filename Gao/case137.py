@@ -5,8 +5,8 @@ for i in range (15):
     l.append(random.randint(1,100))
 print(l)
 def selectsort(l):
-    for i in range(len(l)-1):
-        minIndex = i#默认当前是最小值
+    for i in range(len(l)-1):#i为已排好序列的最小值
+        minIndex = i#引入minIndex放未排序里最小的值
         for j in range(i+1,len(l)):
             if l[j] < l[minIndex]:
                 minIndex = j#找到最小值

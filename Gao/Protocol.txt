@@ -1,10 +1,44 @@
-ICMP：差错通知+信息查询
+0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|Version|  IHL  |Type of Service|          Total Length         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|         Identification        |Flags|      Fragment Offset    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  Time to Live |    Protocol   |         Header Checksum       |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                       Source Address                          |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                    Destination Address                        |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                    Options                    |    Padding    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+Version（1B）：IP协议的版本，ipv4为4，ipv6为6
+IHL（1B）：首部长度，单位为4B，最小为5*4=20B，4bit最大可表示为15，因此IP首部最大为60B
+Type of Service：TOS服务类型，常用在ip报文分类
+Total Length：首部 + 数据的长度，16bit最大可表示65535，因此IP最大为65535B
+Identification：同一数据报文所有分片具有相同标识
+Flags（3bit）：分别为Reserved（保留）、DF（Don't Fragment）置位时禁止分片、MF（More Fragment）置位表示后面还有其它分片
+Fragment Offset：指示分片后的报文在原始报文位置的片偏移，以8B为单位，因此除了最后一片，每个分片的长度均为8的倍数
+Time to Live：以跳为单位，每经过一个路由器就减1，可以避免路由不可达的数据在网络中无限传递
+Protocol：指示承载的上层协议类型
+Header Checksum：首部校验和
+32bit的Source Address、Destination Address：
+Options：可选字段
+Padding：将首部填充为4B的整数位
+
+ICMP（Internet Control Message Protocol）：Internet控制消息协议，是服务IP协议的一个重要协议，通过传递控制消息来传达网络连通情况、主机可达与否、路由是否可用等信息
+主要实现：差错通知 + 信息查询
+ICMP是承载在IP协议之上的，报文结构来看，属于传输层的协议；但它用来分担IP协议无法完成的一部分功能，因此从功能上来看，它与IP为同层的协议
+ICMP通过不同的Type字段来区分不同消息的类型，不同的Code进一步对功能细分
+常见Type、code表示的消息：
+
 type：3	终点不可达   
 code：0	网络不可达
-code：1 	主机不可达
-code：2 	协议不可达
-code：3 	端口不可达（UDP端口扫描）
-code：4		需要分片，但DF（Don't Fragment）置位（MTU探索）
+code：1 主机不可达
+code：2 协议不可达
+code：3 端口不可达（UDP端口扫描）
+code：4	需要分片，但DF（Don't Fragment）置位（MTU探索）
 
 type：5	改变路由
 code：0	特定网络路由改变
@@ -12,9 +46,11 @@ code：1 特定主机路由改变
 
 type：4	code：0	源点抑制（数据包来不及处理，向送信方发送该报文，减慢发送速度）
 
-type：11	超时
+type：11 超时
 code：0	由于TTL为0的超时（traceroute原理）
 code：1 规定时间没有收到所有的分片
+
+Type：8 Code：0、Type：0 Code：0（回送请求与回送应答）
 
  0                   1                   2                   3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -60,6 +96,7 @@ pseudo header：
 |  zero  |  PTCL  |    TCP Length   |
 +--------+--------+--------+--------+
 The TCP Length is the TCP header length plus the data length in octets
+进行错误检测来出发丢弃或重传机制，保证端到端数据完整性构建可靠传输的基础
 10.Urgent pointer：紧急指针配合URG Flags使用，指出本报文段中的紧急数据的字节数
 是一个正的偏移量，urgent+sequence number表示紧急数据最后一个字节序号
 11.Options：最常见的是需要定义maximum segment size时使用，必须是32bit的倍数，不够时需要用0填充
@@ -138,17 +175,28 @@ no-reverse：Server-map表只有正方向，内部服务无法主动访问外部
 DDOS（Distributed Denial of Service）：SYN Flood、UDP Flood、ICMP Flood、HTTP Flood、DNS Flood（网络带宽拥塞，威胁Server正常提供业务）
 DOS（Denial of Service）：单包攻击，扫描类攻击、畸形报文类攻击、特殊报文类攻击
 
-
 GRE：General Routing Encapsulation，三层VPN封装技术，对网络层协议进行封装，在另一种网络中传输。
 GRE上层协议是IP，协议号为47
+
+RIP：Routing Information Protocol，是一种内部网关协议（IGP），用于AS内的路由信息传递，作为距离矢量路由协议，路由表是完全从其他路由器学来的
+使用跳数作为 metric，最大15；管理距离为120；RIPv1（已淘汰）、RIPv2
+承载于UDP 520端口，RIPv2通过组播地址224.0.0.9将路由条目发出；定期30s更新一次；
+当路由的发送 IP 地址和自己接收的接口 IP 地址处于同网段时，才会接收；路由180s未更新便标记为不可用，240s未更新便从路由表删除
+解决环路：
+a.最大跳计数(maximum metric)15
+b.水平分隔(split horizon)，路由器不能按照接收信息的方向去将接收到的信息再发回去
+c.毒性反转，收到毒化路由向发送者发送此路由条目的毒化路由
+d.抑制计时器，防止路由震荡的同时避免更新信息错误恢复不可达路由而导致环路
 
 OSPF：Open Shortest Path First，SPF是OSPF的核心思想
 IP协议号89,工作在单个AS，Interior Gateway Protocol，即IGP
 没有跳数限制、可手工汇总到任意掩码长度
 路由有变化时/路由刷新时间到达，才会发送更新
 管理距离(Ddministrative Distance)为110
+单接口Cost：Cost= 100M/带宽（bps）
 作为链路状态路由协议，交换 路由表+链路状态
 LSA（Link State Advertisement）就是OSPF接口上的描述信息：IP地址、子网掩码、网络类型、Cost值
+
 网络规模大时LSA将生成庞大的数据库，增大计算压力，所以需要分区域；区域内有精确的LSA，不同区域传递简化的LSA；为了无环，设计时采用Hub-Spoke的拓朴架构，核心与分支拓扑。
 区域0为backbone区域，所有normal区域应该直接和区域0相连，交换LSA；normal区域之间即使直连也无法交换LSA；基于路由器接口划分的；
 路由器属于单个区域，则所有接口为同一区域，为Internal Router
@@ -161,22 +209,36 @@ O — O IA — O E1 — O E2
 OSPF只有Neighbor之间才交换LSA，OSPF邻居通过发送Hello包来建立和维护：Area-id、Hello and Dead Interval、Authentication（相同认证、密码）、Stub Area Flag（处在相同的末节区域）
 能交换LSA才为邻接（Adjacency）关系
 多个OSPF路由器在一个多路访问网段时，LSA很多，需要指定Designated Router，Drother与DR互换LSA（与OSPF区域没有任何关系）
+所有OSPF路由器都能接收和传递目标地址为 224.0.0.5 的数据包。只有DR和BDR才能接收和传递目标地址为 224.0.0.6 的数据包。
+
 HELLO--->DBD(Database Description Packets)--->LSR(Link-state Request)--->LSU(Link-state update)--->LSAck
 	     LSA基本描述信息
 Down--->Attempt--->Init--->Two-way--->Exstart--->Exchange--->Loading--->Full
-						   建立邻居关系 确定主从关系
+Exstart：建立邻居关系 确定主从关系
+Exchange：交换DBD（ LSA 的简单描述，只包含 LSA 的一些头部信息）
+Full：OSPF 都收到了邻居回复的所有LSU，数据库状态为收敛状态，仅数据库同步，路由表还在计算
+
 ABR将外部路由从ASBR所在区域转发到其他区域时需要发送单独的LSA（第四类LSA）来告知如何到达ASBR的Router-ID
 外部路由的下一跳不在OSPF进程中，Forward Address设置为0.0.0.0，
 
 多种区域类型、网络类型、链路类型、路由器身份--->多样LSA
 类型1，Router Link:区域内传递，一个路由器只有一条，描述直连链路、接口状态
-类型2，Network Link：只有在选举DR/BDR的网络类型中才会产生，描述广播网络的接入路由器列表及掩码
+类型2，Network Link：只有在选举DR/BDR的网络类型中才会产生，由DR产生，描述广播网络的接入路由器列表及掩码，在本区域Area内洪泛，不允许跨越ABR
 类型3，Summary Link：ABR汇总LSA1后发给其他区域
 类型4，ASBR Summary Link：ABR需要发送单独的LSA来告知如何到达ASBR的Router-ID
 类型5，External Link：ASBR将外部路由重分布进OSPF产生，包含Forward Address
 类型7，NSSA Link：位于NSSA区域的ASBR将外部路由发布进OSPF产生，只能在NSSA区域传递；传递到其他区域需ABR转Type 5
 
 Link State ID：LSA描述的链路的标识，LSA真正的内容
+
+路由增加，LSA就会增加，在末梢网络中许多路由信息是多余的，无需通告进来；通过ABR来过滤掉外部路由进入的区域为 OSPF 末节区域（Stub Area）
+末节区域的路由器需要有指向ABR的路由才能去往区域外的网络，只需默认路由即可
+根据末节区域过滤掉的路由划分为：
+Stub Area（末节区域）：ABR 将过滤掉所有外部路由进入末节区域，也不可将外部路由重分布进OSPF 进程，其他区域的路由（Inter-Area Route）可以进入，由于没有去往外部网络的路由，ABR向区域发送默认路由指向自己
+Totally Stub Area（完全末节区域）：Stub Area的基础上其他区域的路由（Inter-Area Route）也不能进入
+Not-so-Stubby Area（NSSA）：Stub Area的基础上允许将外部路由重分布进 OSPF 进程，由于将外部网络的路由重分布进OSPF进程，ABR不会自动发送默认路由
+Totally Not-so-Stubby Area（Totally NSSA）：NSSA基础上其他区域的路由（Inter-Area Route）也不能进入，由于没有去往其它OSPF区域的路由，ABR向区域发送默认路由指向自己
+某个区域配置为末节区域后，则区域中所有路由器都必须配置为末节区域，因为配置为末节区域的路由器上所有接口发出的 Hello 包中都会有末节标签，没有标签无法成为邻居。
 
 ISIS（Intermediate System-to-Intermediate System）：基于链路状态并使用SPF进行路由计算的一种IGP协议，用于ISPLSP（Link State Protocol Data Unit）链路状态协议数据单元
 ISIS链路状态数据库时LSP的集合分为level-1和level-2
@@ -251,19 +313,31 @@ Incomplete：优先级最低，通过其他方式学习到的路由信息，如B
 
 AS_Path属性：按矢量顺序记录了某条路由从本地到目的地址所要经过的所有AS编号，接收路由时AS_Path列表中有本AS号则不接收该路由，避免AS间的路由环路
 
-
 公认任意（Well-known discretionary）：所有BGP设备都可以识别此类属性，不要求必须存在于Update报文中，即就算缺少这类属性，路由信息也不会出错。
 可选过渡（Optional transitive）：BGP设备可以不识别此类属性，如果不识别此类属性，会接收这类属性，并通告给其他对等体。
 可选非过渡（Optional non-transitive）：BGP设备可以不识别此类属性，如果不识别此类属性，则会被忽略该属性，且不会通告给其他对等体。
 
-JMeter是Apache基于Java开源的压力测试工具、接口测试工具
+选路规则：
+当到达同一目的地存在多条路由时，BGP依照如下策略顺序进行路由选择：
+如果此路由的下一跳不可达，忽略此路由。
+优选协议首选值（PrefVal）最高的路由。
+优选本地优先级（Local_Pref）最高的路由。
+优选本地生成的路由。
+优选AS路径最短的路由。
+比较Origin属性，依稀选Origin类型为IGP、EGP、Incomplete的路由。
+优选MED值最小的路由。
+优选从EBGP邻居学来的路由（EBGP路由优先级高于IBGP路由）
+优选到下一跳IGP Metric较小的路由。
+优选Cluster_List最短的路由。
+优选Router ID最小的路由器发布的路由。
+比较对等体的IP address，优选从具有较小IP地址的对等体学来的路由。
+
+---JMeter是Apache基于Java开源的压力测试工具、接口测试工具
 基于协议、通过进程下启动线程方式模拟并发用户
 依靠线程数提高并发量，单机模拟数以千计并发用户，对CPU、内存消耗大
-
-wrk轻量化的HTTP性能测试工具，采用线程+网络异步IO模型--->很少的线程模拟大量网络连接
+---wrk轻量化的HTTP性能测试工具，采用线程+网络异步IO模型--->很少的线程模拟大量网络连接
 网络异步IO：非阻塞的IO处理，用户进程发起IO请求后立即返回，且内核完成全部操作，最后通过回调或信号通知用户进程处理结果
-
-locust是简单易用的分布式负载测试工具，主要用来对网站进行负载测试，借助协程实现对用户的模拟。
+---locust是简单易用的分布式负载测试工具，主要用来对网站进行负载测试，借助协程实现对用户的模拟。
 
 应用交付在极大提高企业核心应用和业务平台的可用性、性能以及安全性的同时，降低企业数据中心成本和复杂性；新一代的应用负载均衡和性能优化产品，仅仅通过一个功能强大的系统，即可提供高度集成的应用交付功能。
 

@@ -3,21 +3,6 @@ import random
 l = []
 for i in range (15):
     l.append(random.randint(1,100))
-'''def insertionsort(l):
-    if l[0] > l[1]:
-        l[0],l[1] = l[1],l[0]
-    l_or = []
-    l_or.append(l[0])
-    l_or.append(l[1])
-    for i in range (len(l)-1,1,-1):
-        for j  in range (len(l_or)-1,-1,-1):
-            if l[i] >= l_or[j]:
-                l_or.insert(j+1,l[i])
-                break
-            if j == 0:
-                l_or.insert(0,l[i])
-                break
-    return l_or'''
 def insertionSort(arr):
     for i in range(len(arr)-1):
         preIndex = i

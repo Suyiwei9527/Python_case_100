@@ -45,19 +45,9 @@ git reset --hard origin/main
 PVWJZBHLVZCVCYJM
 负数 在计算机中以补码形式存储
 
-return
-datetime.timedelta(days=1) 返回操作后的日期
-使用join链接list成为字符串
-“”.join(k for k in l)
-spilt 将一个字符串分割成多个元素的list
 reduce(function, iterable[, initializer]) 将iterable可迭代对象进行function操作
 (?:x) 匹配x后当做整体处理，非捕获括号
-sorted(iterable, key=None, reverse=False) 可迭代对象iterable，以key进行比较排序，最终返回一个新list
-定义可变参数，在参数前面加了一个*号	def calc(*numbers):
-在list或tuple前面加一个*号，把list或tuple的元素变成可变参数传进去
-关键字参数允许传入0个或任意个含参数名的参数，在函数内部自动组装为一个dict	def person(name, age, **kw):
-dict前面加**号，把dict的所有key-value用关键字参数传入到函数的**kw参数，kw将获得一个dict
-def person(name, age, *, city, job):	*后面的参数被视为命名关键字参数
+
 socket.inet_ntoa(struct.pack(">I",random.randint(2164260864,3741648133)))：随机int打包成大端存储无符号四字节整数字节序----->IP地址的标准点号分隔字符串
 
 time.time() 返回当前时间的时间戳（1970纪元后经过的浮点秒数
@@ -85,6 +75,7 @@ datetime.utcfromtimestamp(timestamp)：根据时间戮创建一个datetime对象
 datetime.combine(date, time)：根据date和time，创建一个datetime对象
 datetime.strptime(date_string, format)：将格式字符串转换为datetime对象
 timedelta 在日期上做天days，小时hour，分钟，秒，毫秒，微妙的时间计算
+datetime.timedelta(days=1) 返回操作后的日期
 
 os.listdir(path) 返回指定的文件夹包含的文件或文件夹的名字的列表
 
@@ -111,22 +102,36 @@ struct.unpack：bytes----->相应的数据类型
 
 字符串最常用数据类型
 字符串格式化：将值插入到一个有字符串格式符%s的字符串中
-%s %d %c %p %u
+%d(整数) %f(浮点数) %s(字符串) %x(十六进制整数)%c %p %u
+>>> 'Age: %s. Gender: %s' % (25, True)
+'Age: 25. Gender: True
+
 str.format() 增强了字符串格式化的功能
+>>> 'Hello, {0}, 成绩提升了 {1:.1f}%'.format('小明', 17.125)
+'Hello, 小明, 成绩提升了 17.1%'
+
 f-string字面量格式化字符串
 name = 'Runoob'
 f'Hello {name}'  # 替换变量
 'Hello Runoob'
 
+使用join链接list成为字符串
+“”.join(k for k in l)
+spilt 将一个字符串分割成多个元素的list
+
+while 只要条件满足就一直循环，直到不满足时跳出
+break打断循环，提前跳出
+continue 跳出当前循环，直接开始下一次循环
+
 序列是最基本的数据结构，共6个序列的内置类型
 list:数据类型
 append()更新、pop()删除并返回、del语句删除、列表可嵌套，operator模块的eq方法用于比较
 len(list)、min(list)、max（list）、list(seq)函数
+sorted(iterable, key=None, reverse=False) 可迭代对象iterable，以key进行比较排序，最终返回一个新list
 
 元组与list类似，但不能修改，指元组指向内存中的内容不可变
 tuple(iterable)函数：可迭代系列转换为元组
 元组推导式是用()圆括号，返回的结果是一个生成器对象，tuple()函数可将其转换成元组
-
 
 dict：可变容器模型，且可存储任意类型对象
 1.不允许同一个键出现两次
@@ -169,12 +174,14 @@ python参数传递：传不可变对象（str、tuples）、可变对象（list�
 *args：接收任意数量的位置参数，打包为tuple
 **kwargs：接收任意数量的关键字参数，打包为dict
 可使用 * 或 ** 将序列或字典解包为参数
+def person(name, age, *, city, job):*后面的参数被视为命名关键字参数
 匿名函数：不使用def语句来定义，lambda只是一个表达式，封装有限逻辑，有自己的命名空间，不能访问自己参数列表之外或全局命令空间里的参数
 lambda [arg1 [,arg2,.....argn]]:expression
 
 装饰器：是一种函数，可以动态修改函数或类；本质就是接收函数作为输入返回新的包装后的函数的对象。
 装饰器通过 @ 符号应用在函数定义之前
 类装饰器是包含 __call__ 方法的类，接受一个函数作为参数，并返回一个新的函数
+你可以将多个装饰器堆叠在一起，它们会按照从下到上的顺序依次应用
 
 运行期检测到的错误为异常
 异常捕捉可以使用 try/except 语句
@@ -199,10 +206,6 @@ with open ("test.txt") as f:该文件总是会关闭
 在导入包时， sys.path 中的目录来寻找这个包中包含的子目录,只有包含 __init__.py 的文件才会被认作是一个包
 from package import item对应的 item 既可以是包里面的子模块（子包），或者包里面定义的其他名称，比如函数，类或者变量(import把item当作包--->模块--->还没找到，抛出:exc:ImportError 异常)
 import item.subitem.subsubitem ,除了最后一项，都必须是包，而最后一项则可以是模块/是包，但是不可以是类/函数/变量的名字。
-
-线程模块
-_thread、threading
-threading.Thread(target, args=(), kwargs={}, daemon=None)：
 
 正则表达式：字符序列，re模块来处理正则表达式（一组函数允许匹配、搜索和替换操作）
 re.match(pattern, string, flags=0)：从字符串的起始位置匹配
@@ -240,19 +243,34 @@ os.getenv(key)：获取指定环境变量的值
 os.system(command)： shell 中执行命令
 os.symlink(src, dst)：创建一个软链接
 
-内部排序：只使用内存
-交换排序：冒泡排序、快速排序
-插入排序：直接插入排序、希尔排序
-选择排序：简单选择排序、堆排序
+内部排序（只使用内存）：
+交换排序：
+1.冒泡排序：每次比较相邻两元素，重复走访完所有列，最大值冒泡到最右边(O(n²))
+2.快速排序：冒泡排序基础上的递归分治法(O(n log n))
+a.选出“基准”（pivot）进行分区（partition），左边都小于pivot，右边都大于pivot
+b.递归地（recursive）对左右子序列进行分区
+
+插入排序：
+1.直接插入排序：通过构建有序序列，对未排数据，在已排序列从后向前扫描(O(n²))
+a.将第一待排序序列第一个元素看成有序序列，第二个到最后一个为未排序序列
+b.遍历未排序序列，将当前元素插入到有序序列适当位置
+2.希尔排序：递减增量排序算法，非稳定排序算法；待排序序列分割成若干子序列分别进行直接插入排序，最终对“基本有序”的序列全体记录进行直接插入排序(O(n log n))
+a.选择增量序列t1，t2，……，tk
+b.k个序列进行直接插入排序
+
+选择排序：
+1.简单选择排序：(O(n²))
+a.在未排序序列中找到最小的元素，放在起始位置
+b.重复在未排序序列找到最小的放到已排序序列末尾
+2.堆排序
 
 进程、线程区别：是实现并发编程的两个核心概念
-Process（ multiprocessing 模块）：操作系统分配资源（CPU、内存等）的基本单位，每个进程拥有独立的内存空间，彼此隔离。
+---Process（ multiprocessing 模块）：操作系统分配资源（CPU、内存等）的基本单位，每个进程拥有独立的内存空间，彼此隔离。
 独立性‌：进程间数据不共享，需通过 IPC（进程间通信，如管道、队列）交换数据。
 资源开销大‌：创建进程需要复制父进程的资源（如 Python 的 multiprocessing 模块）。
 多核并行‌：Python 的多进程可绕过全局解释器锁（GIL），充分利用多核 CPU。
 适用场景‌：CPU 密集型任务（如数值计算）。
-
-Thread（threading 模块）：进程内的执行单元，共享同一进程的内存和资源。
+---Thread（threading 模块）：进程内的执行单元，共享同一进程的内存和资源。
 共享内存‌：线程间可直接读写同一进程的全局变量，但需同步机制（如锁）避免竞争。
 资源开销小‌：创建和切换线程比进程更快。
 受 GIL 限制‌：同一时刻仅一个线程执行 Python 字节码。
@@ -269,8 +287,7 @@ target：线程执行的目标函数。
 args：目标函数的参数，以元组形式传递。
 kwargs：目标函数的关键字参数，以字典形式传递。
 daemon：指定线程是否为守护线程。
-
-协程：
+---协程：
 多线程应用，CPU通过切片方式来切换（需要耗时：保存状态，下次继续）线程间的执行。协程则只使用一个线程，规定某个代码块的执行顺序，当程序中存在大量不需要CPU的操作时（IO），适用于协程
 用户态的轻量级线程，允许在单线程内实现多个任务的协作式切换，无需依赖操作系统的线程调度，主动让出控制权，不是强制中断
 greenlet：
@@ -285,19 +302,165 @@ GIL是什么？作用？
 CPU密集型多线程任务（科学计算、图像处理）无法利用多核，因同一时间仅一线程运行
 是Cpython为平衡实现复杂性与线程安全进入的机制，简化开发但是限制了多线程CPU任务的性能
 
-数组和列表的区别
-给一个数组和目标值，找出该数组中和为目标值的两个数
-无重复字符的最长字串
-迭代器和生成器的区别
-深拷贝和浅拷贝的区别
+迭代器和生成器的区别？
+---可通过iter()创建迭代器对象，将可迭代对象转换为遵循迭代协议的工具，实现对元素的逐个访问
+迭代器通过 next() 方法按顺序返回元素，直到触发 StopIteration 异常终止迭代
+---通过使用了yield的函数被称为生成器，可以在迭代过程中逐步产生值，而不是一次性返回所有结果
+它们可以按需生成值，避免一次性生成大量数据并占用大量内存，是惰性计算的
+
+深拷贝和浅拷贝的区别？
+---浅拷贝创建一个新对象，子对象（如嵌套列表、字典等）仍然是原对象的引用，修改子对象时，原对象和拷贝对象指向同一个内存会同时变化
+深拷贝创建一个新对象，并‌递归复制所有内层子对象‌，生成完全独立的副本，原对象和拷贝对象之间没有任何内存共享。
+
 读取一个内存很大的文件，应该怎么读取
-ip地址的排序
+---避免一次性加载全部数据到内存，采用流式（逐行/逐块：read(size)）处理
+
 虚拟内存和物理内存有什么区别，内存满了怎么办
-tcp的校验和有什么作用
-socket和websocket有什么区别和联系
+---硬件内存（RAM），由半导体芯片组成，直接存储CPU运行所需的程序和数据，访问速度可达纳秒级
+虚拟内存操作系统通过硬盘空间模拟的“扩展内存”，以分页文件形式存在，用于存储物理内存中暂时不活跃的数据，硬盘速度远低于RAM
+
+什么是装饰器？请给出一个装饰器的例子
+---修改或增强函数/类功能的特殊工具，本质是接受函数对象作为参数的高级函数，通过@语法糖实现，能够在不修改原函数代码的前提下添加新功能。
+def decorator(func):
+	def wrapper():
+		print("before")
+		func()#调用原函数
+		print("after")
+	return wrapper #内部函数（wrapper）作为装饰器的最终返回值
+
+@decorator
+def my_func():
+	print("test")
+my_func()
+
+装饰器和上下文管理器的区别？
+---装饰器修改或增强函数/类的功能，返回包装后的函数/类，用作功能扩展（日志记录、计时、缓存）、权限控制、代码复用
+上下文管理器管理资源的获取与释放（文件、网络连接），确保资源正确处理，作用于代码块（with语句限定作用范围），enter 返回资源对象（如文件句柄），exit 处理清理逻辑但不修改返回值
+
+闭包是什么？举个例子。
+---一个函数捕获并记住了其外层作用域中的变量，需嵌套函数对非局部变量的引用+外部函数返回内部函数
+def outer_function(msg):
+    message = msg# 外层函数的变量
+    def inner_function():
+        print(f"Message: {message}")# 内层函数引用了外层作用域的变量 message
+    return inner_function    # 返回内层函数（此时 message 会被闭包捕获）
+	
+my_closure = outer_function("Hello, 闭包!")# 调用外层函数，返回一个闭包
+my_closure()  # 输出: Message: Hello, 闭包!# 即使 outer_function 已执行完毕，闭包仍能访问 message
+
+面向对象编程和函数式编程的区别？
+---面向对象：世界由Object构成，对象包含数据（属性）和行为（方法），关注对象之间的关系（继承、组合、多态）
+---函数式编程：世界由函数构成，强调输入 → 计算 → 输出，关注函数的组合（高阶函数，纯函数）
+
+如何在Python中实现多态？
+---多态（Polymorphism）是面向对象编程（OOP）的核心特性之一，核心思想是‌“同一接口，多种实现”；python作为动态类型语言，天然支持多态，对象的行为由其方法决定，而非继承关系（对象行为就是类型）
+本质‌就是：
+统一接口调用‌、行为差异化：不同的对象通过相同的方法名或操作符被调用，但实际执行的逻辑（行为）由对象类型决定。
+
+a.鸭子类型（Duck Typing）：Python不检查类型，而是检查对象是否具备所需的方法或属性
+class Dog:
+    def speak(self):
+        return "Woof!"
+class Cat:
+    def speak(self):
+        return "Meow!"
+def animal_sound(obj):
+    print(obj.speak())
+# 不同类的对象调用同一方法
+animal_sound(Dog())   # 输出: Woof!
+animal_sound(Cat())   # 输出: Meow!
+animal_sound函数不需要知道对象的具体类型，只需确保它有speak()方法。
+
+b.‌通过继承和方法重写:通过父类定义接口，子类重写方法实现多态。
+class Shape:
+    def area(self):
+        raise NotImplementedError("子类必须实现area方法")
+
+class Circle(Shape):
+    def __init__(self, radius):
+        self.radius = radius
+    def area(self):
+        return 3.14 * self.radius ** 2
+class Square(Shape):
+    def __init__(self, side):
+        self.side = side
+    def area(self):
+        return self.side ** 2
+# 统一调用不同子类的area方法
+shapes = [Circle(5), Square(4)]
+for shape in shapes:
+    print(shape.area())  # 输出: 78.5 和 16
+子类强制实现父类定义的接口，确保所有子类对象有一致的方法。
+
+c.抽象基类（Abstract Base Class, ABC）：使用abc模块强制定义抽象方法，确保子类实现接口
+from abc import ABC, abstractmethod
+class Animal(ABC):
+    @abstractmethod
+    def speak(self):
+        pass
+class Duck(Animal):
+    def speak(self):
+        return "Quack!"
+class Cow(Animal):
+    def speak(self):
+        return "Moo!"
+# 所有子类必须实现speak方法
+animals = [Duck(), Cow()]
+for animal in animals:
+    print(animal.speak())  # 输出: Quack! 和 Moo!
+避免子类遗漏方法实现（若未实现，实例化时报错）
+
+d.运算符重载：通过特殊方法（如__add__, __len__）实现多态的运算符行为（同一运算符在不同类型或对象上执行时表现出不同的操作逻辑‌，这是多态特性在运算符层级的体现）
+class Vector:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+    def __add__(self, other):
+        return Vector(self.x + other.x, self.y + other.y)
+v1 = Vector(1, 2)
+v2 = Vector(3, 4)
+v3 = v1 + v2  # 调用__add__方法，返回新的Vector实例
+print(v3.x, v3.y)  # 输出: 4 6
+
+e.函数参数多态：同一个函数处理不同类型的参数（逻辑会不同），依赖对象的共有方法。
+def get_length(obj):
+    return len(obj)
+print(get_length("Hello"))  # 字符串，输出5
+print(get_length([1, 2, 3])) # 列表，输出3
+print(get_length({"a": 1, "b": 2})) # 字典，输出2
+所有参数对象都实现了__len__方法。
+
+__name__是什么？
+---它是一个内置变量，用于表示当前模块的名称；作为主程序运行时：__name__ 的值被设置为 "__main__"，模块被导入时：__name__ 的值被设置为模块的文件名（不包括 .py 扩展名）
+
+如何进行文件的读写操作？
+---open() 方法用于打开一个文件，并返回文件对象；使用open()一定要使用close() 方法关闭文件对象（使用 with 语句（自动关闭文件）更安全）
+mode：r（只读）、w（创建/打开文件从头写入）、a（打开文件追加写入）、+（可读可写）、b（二进制模式）
+read()：读取全部内容（返回字符串）、read(size)：读取指定字节数、readline()：读取单行、readlines()：读取所有行并返回列表。
+file.write(str)：将字符串写入文件，返回写入字符长度、file.writelines(sequence)：向文件写入一个序列字符串列表
+
+如何在Python中处理异常？
+---raise主动向外抛出异常，try...except...捕获异常；‌else‌：仅在try块无异常时执行；‌finally‌：无论是否异常都执行（如关闭文件）。
+try:
+    x = int(input("输入数字: "))
+    result = 10 / x
+except ValueError:
+    print("无效数字！")
+except ZeroDivisionError:
+    print("不能除以零！")
+except Exception as e:
+    print(f"意外错误: {e}")
+else:
+    print(f"结果是: {result}")
+finally:
+    print("执行结束")
+
+如何进行模块的导入和使用？
+---模块（Module）‌是一个包含函数、变量或类的.py文件，可通过导入重复使用代码：
+导入整个模块（import math）、导入特定内容（from math import pi, sin）、为模块或内容起别名（import numpy as np）、导入模块中所有内容（慎用from os import *）
+按以下顺序查找模块：当前脚本所在目录、环境变量PYTHONPATH指定的路径、标准库目录（如/usr/lib/python3.10）、.pth文件指定的路径（如虚拟环境）
+
+数组和列表的区别
 如何在Python中实现单例模式？
-
-
-__name__是什么
 __new__() 和 __init__()的区别
-read()、readline()和readlines()的区别
+解释Python中的垃圾回收机制。
