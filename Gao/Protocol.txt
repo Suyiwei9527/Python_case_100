@@ -1,3 +1,10 @@
+Vlan（Virtual Local Area Network）虚拟局域网，将一个物理的LAN在逻辑上划分为多个广播域，Vlan内的主机可以直接通信，而Vlan间必须借助路由才可通信。
+Vlan Tag：4Byte
+TPID（Tag Protocol Identifier）：2Byte，固定值为0x8100，表明为IEEE 802.1Q的Vlan数据帧。
+PRI（Priority）：3bit，定义优先级，数值越大优先级越高
+CFI（Canonical Format indicator）：1bit，表示mac地址在传输介质中是否以标准格式封装，用来兼容以太网和令牌环网，以太网中该值为0
+VID（Vlan ID）：12bit，表示数据帧所属的Vlan编号，有效Vlan ID为1-4094
+
 0                   1                   2                   3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -96,7 +103,7 @@ pseudo header：
 |  zero  |  PTCL  |    TCP Length   |
 +--------+--------+--------+--------+
 The TCP Length is the TCP header length plus the data length in octets
-进行错误检测来出发丢弃或重传机制，保证端到端数据完整性构建可靠传输的基础
+进行错误检测来触发丢弃或重传机制，保证端到端数据完整性构建可靠传输的基础
 10.Urgent pointer：紧急指针配合URG Flags使用，指出本报文段中的紧急数据的字节数
 是一个正的偏移量，urgent+sequence number表示紧急数据最后一个字节序号
 11.Options：最常见的是需要定义maximum segment size时使用，必须是32bit的倍数，不够时需要用0填充
@@ -114,10 +121,10 @@ persist timer（坚持定时器）：Window size由0----->非0会发送一个ACK
 keepalive timer（保活定时器）：TCP建立连接时指定了SO_KEEPALIVE生效，C、S长时间无数据交互，周期性（default 2hours）探测对方是否还活着
 
 four-way wave
-C：发完FIN后          ESTABLISHED---->FIN_WAIT-1                        S：发完ACK后       ESTABLISHED----->CLOSE-WAIT
-C：收到ACK后          FIN_WAIT-1----->FIN_WAIT-2（等待S关闭）           S：发完FIN后       CLOSE-WAIT----->LAST-ACK
-C：收到S的FIN后       FIN_WAIT-2----->TIME-WAIT 并发送LAST-ACK          S：收到ACK后       LAST-ACK----->CLOSED
-C：2MSL后             TIME-WAIT----->CLOSED
+C：发完FIN后         				ESTABLISHED---->FIN_WAIT-1                       S：发完ACK后       ESTABLISHED----->CLOSE-WAIT
+C：收到ACK后          				FIN_WAIT-1----->FIN_WAIT-2（等待S关闭）          S：发完FIN后       CLOSE-WAIT----->LAST-ACK
+C：收到S的FIN后并发送LAST-ACK       FIN_WAIT-2----->TIME-WAIT          				 S：收到ACK后       LAST-ACK----->CLOSED
+C：2MSL后             				TIME-WAIT----->CLOSED
 
 MSL（Maximum Segment Lifetime，报文段最大生存时间）‌
 RFC793规定MSL为2分钟，应用中常采用30秒、1分钟或2分钟
@@ -131,20 +138,30 @@ FIN_WAIT_2 timer：FIN_WAIT_2下被动关闭的一端网络断掉或宕机无法
 分布式：协议计算的控制平面和报文转发的数据平面
 SDN（Software Defined Network）软件自定义网络，OPenFlow使网络向软件一样灵活编程
 
-VXLAN（Virtual eXtensible Local Area Network），实际是VPN技术，能够在任意路由可达的物理网络（Underlay网络），通过VXLAN网关之间的VXLAN隧道实现网络内部的互通
+VXLAN（Virtual eXtensible Local Area Network），实际是VPN技术，能够在任意路由可达的物理网络（Underlay网络）上叠加二层虚拟网络（Overlay网络），通过VXLAN网关之间的VXLAN隧道实现网络内部的互通
 使用MAC in UDP的封装方式，基于4789
+Underlay网络由各种物理网络设备构成，是Overlay网络的承载基础。提供Overlay网络所需的可达性和可靠性。Underlay使用独立的控制平面协议（如OSPF或eBGP）、转发平面协议（通常是IPv4），并且与Overlay网络逻辑隔离，对Overlay网络的路由信息不做感知。
 根据VXLAN隧道端点（VTEP（VXLAN Tunnel End Point））设备不同形态分为：
 Network Overlay：两个端点都是物理交换机（集中式网关：终端设备集中在少数几个网关、分布式网关：分布在多个网关上）
 Host Overlay：两个端点都是虚拟交换机，物理交换机仅负责IP报文的高速转发，不参与VXLAN的具体处理。
 Hybrid Overlay：隧道的端点既可以是虚拟交换机，也可以是物理交换机
-NVE (Network Virtualization Edge)：实现网络虚拟化功能的网络设备
-VTEP (VXLAN Tunnel Endpoints)：XLAN隧道端点，位于NVE中，负责VXLAN报文的封装和解封装
-VNI (VXLAN Network Identifier)： （L2 VNI：类似于VLAN ID，用于标识二层广播域）、（ L3 VNI：标识VPN实例，支持跨子网转发）
-BD (Bridge Domain)：类似于传统网络中的VLAN，用于划分广播域。BD与VNI以1:1方式映射，同一BD内的终端可以进行二层通信
+早期部署方式为静态（手动创建VXLAN隧道，配置工作量大），VXLAN本身无控制平面，VTEP发现和主机信息手机通过数据平面的流量泛红实现--->数据中心网络大量泛洪流量
+解决上述问题--->VXLAN与EVPN（Ethernet Virtual Private Network，以太网虚拟私有网络）相结合，实现在VXLAN隧道的自动创建、VTEP的自动发现以及主机信息的相互通告。这种结合优化了网络的性能和管理效率。
+NVE (Network Virtualization Edge)：实现网络虚拟化功能的网络设备（提供虚拟网络的接入能力）
+VTEP (VXLAN Tunnel Endpoints)：XLAN隧道端点，位于NVE中，负责VXLAN报文的封装和解封装。VXLAN报文的外层IP头部包含源VTEP的IP地址和目的VTEP的IP地址。
+VNI (VXLAN Network Identifier)： 数据平面的封装标识符，作用于报文传输，全局网络范围内唯一标识。（L2 VNI：类似于VLAN ID，用于标识二层广播域）、（ L3 VNI：标识VPN实例，支持跨子网转发）；24位，支持1600万个VXLAN网络隔离
+BD (Bridge Domain)：控制平面的逻辑域，管理本地二层转发策略，是本地设备范围内的逻辑实体，类似于传统网络中的VLAN，用于划分广播域。BD与VNI以1:1方式映射，同一BD内的终端可以进行二层通信
+业务接入VXLAN方式：
+二层子接口方式：例如，在SW1创建二层子接口关联广播域BD10，该子接口下的流量会被注入到BD10。
+VLAN绑定方式：例如，在SW2将VLAN10与广播域BD10关联，所有VLAN10的流量会被注入到BD10。
+二层（L2）网关：实现VXLAN网络内部的二层流量转发，以及不同子网终端的通信
+三层（L3）网关：VBDIF (Virtual Bridge Device Interface)用于处理VXLAN网络内终端的跨子网通信和对外部网络的访问。
+VXLAN隧道由一对VTEP定义；报文在VTEP设备上封装后，通过隧道在三层网络中传输；
+静态隧道：配置本端和远端的VNI、VTEP IP地址以及头端复制列表（head-end peer-list）来建立隧道
+动态隧道：通过BGP EVPN协议动态建立VXLAN隧道。VTEP之间建立BGP EVPN对等体，并利用BGP EVPN路由交换VNI和VTEP IP地址信息，实现VXLAN隧道的自动创建。
 
-防火墙本质就是 filter-policy
-firewall：查看会话表
-首包才能创建会话
+防火墙本质就是 filter-policy、查看会话表
+开启状态检测机制：首包才能创建会话（主要针对TCP和ICMP报文）
 1.匹配IP route 2.匹配Security Policy
 实现包过滤的核心技术是访问控制列表
 域间安全策略：域间流量的转发（转发策略）适用于接口加入不同安全区域的场景
@@ -267,7 +284,6 @@ PSNP：Partial Sequence Number PDU，请求/确认特定LSP更新
 DIS（Designated Intermediate System），周期性10s发送CSNP报文、创建和更新伪节点（Pseudonodes）、生成伪节点的LSP
 建立邻接关系--->组播地址通告自己的LSP--->DIS收集LSP，每10s发送一次CSNP（所有LSP摘要信息）--->与LSDB对比向DIS发送PSNP--->DIS回复请求中的LSP
 
-
 BGP（Border Gateway Protocol）：实现AS（Autonomous System）之间的路由可达并选择最佳路由的距离矢量协议
 管理规模不断扩大的网络--->分成不同的AS，EGP（Exterior Gateway Protocol）实现AS间动态交换路由信息，设计简单（只发布可达的路由信息，不优选，未考虑环路避免）
 BGP是取代EGP的另一种外部网关协议（路由优选、避免路由环路、高效传递路由和维护大量路由信息）
@@ -359,6 +375,14 @@ HTTP（HyperText Transfer Protocol）超文本传输协议,规定了浏览器和
 Cookie技术：在客户端保持HTTP状态信息；Server响应Set-Cookie，Client增加Cookie头回传给服务端
 Session技术：Cookie较多会降低传输效率会话状态保存在服务器端的技术
 
+HTTP1.1协议繁琐；未充分利用TCP性能；尽管客户端可以一个TCP中发送多个请求，但还是需要服务器响应后按发送顺序接收
+HTTP/2头字段使用HPAKC算法进行数据压缩；通过stream、帧的报文结构解决队头阻塞问题；支持多路复用、服务端推送、消息报文是二进制格式
+二进制分帧：最小的传输单元叫做帧，各自有不同作用
+多路复用：请求、应答都在独立的Stream中，互不影响
+流量控制、优先级机制：通过流的优先级差异化调控请求；每个stream均存在独立的流控窗口，还存在针对整个TCP连接层面的流控
+HEAD 头数据压缩：压缩HTTP头包含的大量冗余数据，可实现多个请求压缩到一个包中
+二进制编码而非之前的文本格式数据
+
 连接到 MySQL 数据库：mysql -u 用户名 -p
 查看所有数据库：SHOW DATABASES;
 选择一个数据库：USE DATABASES;
@@ -387,12 +411,11 @@ ALTER TABLE 表名 CHANGE 旧列名 新列名 数据类型 [约束];
 删除索引：DROP INDEX 索引名 ON 表名;
 
 UNION:连接两个以上的SELECT语句的结果组合到一个结果集合，并去除重复的行。
-UNION ALL 不去除重复行
+UNION ALL：不去除重复行
 GROUP BY:根据一个或多个列对结果集进行分组,在分组的列上我们可以使用 COUNT, SUM, AVG,等函数。
 JOIN：从多个数据表中读取数据
 NNER JOIN（内连接,或等值连接）：获取两个表中字段匹配关系的记录。
+---SELECT orders.order_id, customers.customer_name FROM orders INNER JOIN customers ON orders.customer_id = customers.customer_id;（选择 orders 表和 customers 表中满足连接条件的订单 ID 和客户名称）
+
 LEFT JOIN:LEFT JOIN 返回左表的所有行，并包括右表中匹配的行，如果右表中没有匹配的行，将返回 NULL 值
-
-
-
-
+---SELECT customers.customer_id, customers.customer_name, orders.order_id FROM customers LEFT JOIN orders ON customers.customer_id = orders.customer_id;（选择客户表中的客户 ID 和客户名称，并包括左表 customers 中的所有行，以及匹配的订单 ID（如果有的话）。）

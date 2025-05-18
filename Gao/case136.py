@@ -5,7 +5,7 @@ for i in range (15):
     l.append(random.randint(1,100))
 print(l)
 def partition(l,left,right):
-    key = left
+    key = left#基准是left，从右往左开始
     while(right > left):
         while(right > left and l[right] >= l[key]):
             right -= 1

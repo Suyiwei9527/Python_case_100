@@ -10,9 +10,10 @@ def ShellSort(l):
     while gap < n // 3:
         gap = gap * 3 + 1
     while gap > 0:
-        for i in range(gap,n):#i表示当前待插入的元素，通过内存while循环将其插入到合适的位置
-            Curnum , index = l[i] , i - gap#index为当前元素在其子序列比较的前一个元素
-            while index >=0 and Curnum < l[index]:
+        for i in range(gap,n):#i表示当前待插入的元素，通过内层while循环将其插入到合适的位置
+            index = i - gap#index为当前元素在其子序列比较的前一个元素
+            Curnum = l[i]
+            while index >= 0 and Curnum < l[index]:
                 l[index + gap] = l[index]
                 index -= gap
             l[index + gap] = Curnum

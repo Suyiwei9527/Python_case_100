@@ -6,10 +6,10 @@ for i in range (15):
 print(l)
 def selectsort(l):
     for i in range(len(l)-1):#i为已排好序列的最小值
-        minIndex = i#引入minIndex放未排序里最小的值
+        minIndex = i#内循环最小值要变，引入minIndex放未排序里最小的值
         for j in range(i+1,len(l)):
             if l[j] < l[minIndex]:
-                minIndex = j#找到最小值
+                minIndex = j#更新最小值
         l[minIndex],l[i]=l[i],l[minIndex]#找到的最小值放到外循环最小值的位置
     return l
 print(selectsort(l))
